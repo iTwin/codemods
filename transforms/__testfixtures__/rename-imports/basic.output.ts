@@ -1,4 +1,35 @@
-import { Module } from "@itwin/some-package";
-import { OtherModule } from "some-other-package";
+import { coreFrontendModule } from "@itwin/core-frontend";
+import { coreBackendModule } from "@itwin/core-backend";
+import { coreCommonModule } from "@itwin/core-common"; 
+import { coreGeometryModule } from "@itwin/core-geometry";
+import { ecschemaMetadataModule } from "@itwin/ecschema-metadata";
+import { ecschemaLocaterModule } from "@itwin/ecschema-locaters";
+import { ecschemaEditingModule } from "@itwin/ecschema-editing";
+import { coreOrbitgtModule } from "@itwin/core-orbitgt";
+import { frontendDevtoolsModule } from "@itwin/frontend-devtools";
+import { webglCompativilityModule } from "@itwin/webgl-compatibility";
+import { coreTransformerModule } from "@itwin/core-transformer";
+import { coreMarkupModule } from "@itwin/core-markup";
+import { editorFrontendModule } from "@itwin/editor-frontend";
+import { editorBackendModule } from "@itwin/editor-backend";
+import { editorCommonModule } from "@itwin/editor-common";
+import { analyticalBackendModule } from "@itwin/analytical-backend";
+import { linearReferencingBackendModule } from "@itwin/linear-referencing-backend";
+import { linearReferencingCommonModule } from "@itwin/linear-referencing-common";
+import { physicalMaterialBackendModule } from "@itwin/physical-material-backend";
+import { presentationFrontendModule } from "@itwin/presentation-frontend";
+import { presentationBackendModule } from "@itwin/presentation-backend";
+import { presentationCommonModule } from "@itwin/presentation-common";
+import { presentationComponentsModule } from "@itwin/presentation-components";
+import { presentationTestingModule } from "@itwin/presentation-testing";
+import { uiAbstractModule } from "@itwin/ui-abstract";
+import { uiComponentsModule } from "@itwin/ui-components";;
+import { uiCoreModule } from "@itwin/ui-core";
+import { uiImodelComponentsModule } from "@itwin/ui-imodel-components";
+import { uiNinezoneModule } from "@itwin/ui-ninezone";
+import { uiFrameworkModule } from "@itwin/ui-framework";
+import { ecschema2tsModule } from "@itwin/ecschema2ts";
+import { webpackCoreModule } from "@itwin/core-webpack-tools";
+import { webpackBackendModule } from "@itwin/backend-webpack-tools";
 
-const notAnImport = "@bentley/should-be-unchanged"
+const notAnImport = "@bentley/imodeljs-backend";

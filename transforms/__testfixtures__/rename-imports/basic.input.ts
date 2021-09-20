@@ -1,4 +1,35 @@
-import { Module } from "@bentley/some-package";
-import { OtherModule } from "some-other-package";
+import { coreFrontendModule } from "@bentley/imodeljs-frontend";
+import { coreBackendModule } from "@bentley/imodeljs-backend";
+import { coreCommonModule } from "@bentley/imodeljs-common"; 
+import { coreGeometryModule } from "@bentley/geometry-core";
+import { ecschemaMetadataModule } from "@bentley/ecschema-metadata";
+import { ecschemaLocaterModule } from "@bentley/ecschema-locaters";
+import { ecschemaEditingModule } from "@bentley/ecschema-editing";
+import { coreOrbitgtModule } from "@bentley/orbitgt-core";
+import { frontendDevtoolsModule } from "@bentley/frontend-devtools";
+import { webglCompativilityModule } from "@bentley/webgl-compatibility";
+import { coreTransformerModule } from "@bentley/imodeljs-transformer";
+import { coreMarkupModule } from "@bentley/imodeljs-markup";
+import { editorFrontendModule } from "@bentley/imodeljs-editor-frontend";
+import { editorBackendModule } from "@bentley/imodeljs-editor-backend";
+import { editorCommonModule } from "@bentley/imodeljs-editor-common";
+import { analyticalBackendModule } from "@bentley/analytical-backend";
+import { linearReferencingBackendModule } from "@bentley/linear-referencing-backend";
+import { linearReferencingCommonModule } from "@bentley/linear-referencing-common";
+import { physicalMaterialBackendModule } from "@bentley/physical-material-backend";
+import { presentationFrontendModule } from "@bentley/presentation-frontend";
+import { presentationBackendModule } from "@bentley/presentation-backend";
+import { presentationCommonModule } from "@bentley/presentation-common";
+import { presentationComponentsModule } from "@bentley/presentation-components";
+import { presentationTestingModule } from "@bentley/presentation-testing";
+import { uiAbstractModule } from "@bentley/ui-abstract";
+import { uiComponentsModule } from "@bentley/ui-components";;
+import { uiCoreModule } from "@bentley/ui-core";
+import { uiImodelComponentsModule } from "@bentley/ui-imodel-components";
+import { uiNinezoneModule } from "@bentley/ui-ninezone";
+import { uiFrameworkModule } from "@bentley/ui-framework";
+import { ecschema2tsModule } from "@bentley/ecschema2ts";
+import { webpackCoreModule } from "@bentley/webpack-tools-core";
+import { webpackBackendModule } from "@bentley/backend-webpack-tools";
 
-const notAnImport = "@bentley/should-be-unchanged"
+const notAnImport = "@bentley/imodeljs-backend";
