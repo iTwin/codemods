@@ -16,14 +16,15 @@
     "url": "http://www.bentley.com"
   },
   "dependencies": {
-    "jscodeshift": "^0.13.0"
+    "@typescript-eslint/typescript-estree": "^4.33.0",
+    "jscodeshift": "^0.13.0",
+    "typescript": "~4.4.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/jscodeshift": "^0.11.2",
     "jest": "^27.1.0",
-    "ts-jest": "^27.0.5",
-    "typescript": "~4.3.0"
+    "ts-jest": "^27.0.5"
   },
   "jest": {
     "roots": [
