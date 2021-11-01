@@ -1,13 +1,9 @@
-import { parse, parseAndGenerateServices, ParserServices } from '@typescript-eslint/typescript-estree';
+import { AST, parse, parseAndGenerateServices, ParserServices, TSESTreeOptions } from '@typescript-eslint/typescript-estree';
 import core, { FileInfo } from 'jscodeshift';
 
-interface ParserOptions {
-  filePath: string,
-  tsConfigPath: string;
-}
 interface ParserState {
   services?: ParserServices;
-  options?: ParserOptions;
+  options?: TSESTreeOptions;
 }
 
 export class Parser {
@@ -30,7 +26,7 @@ export class Parser {
     };
   }
 
-  public static Parse(source) {
+  public static Parse(source): AST<any> {
     if (this.getState().options !== undefined) {
       const options = this.getState().options;
       delete this.getState().options;

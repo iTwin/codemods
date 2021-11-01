@@ -59,14 +59,15 @@ const changedPackages = {
 
 export default function transformer(file: FileInfo, api: API) {
   const j = api.jscodeshift;
-  
+
   return j(file.source)
     .find(ImportDeclaration)
     .find(StringLiteral)
     .filter((path: ASTPath<StringLiteral>) => { return changedPackages[path.node.value]; })
     .replaceWith((path: ASTPath<StringLiteral>) => {
-      path.node.value = changedPackages[path.node.value];
-      return path.node;
+      return j.stringLiteral(changedPackages[path.node.value]);
     })
     .toSource();
 }
+
+module.exports.parser = "ts";

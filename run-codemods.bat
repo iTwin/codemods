@@ -1,0 +1,2 @@
+../codemods/node_modules/.bin/jscodeshift -t ../codemods/transforms/typed-transforms.ts --extension=ts --tsConfigPath=./tsconfig.json ./src/**/*.ts
+../codemods/node_modules/.bin/jscodeshift -t ../codemods/transforms/itwin-codemods.ts --extension=ts --parser=ts ./src/**/*.ts
