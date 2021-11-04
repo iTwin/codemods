@@ -1,10 +1,11 @@
 import { API, FileInfo } from 'jscodeshift';
+
 import renameImports from "./rename-imports";
 import removeRequestContext from "./remove-request-context"
 
 export default function transformer(file: FileInfo, api: API) {
-  const transforms = [renameImports, removeRequestContext];
-
+  // const transforms = [removeRequestContext, renameImports];
+  const transforms = [renameImports];
   let src = file.source;
   transforms.forEach((transform) => {
     if (!src)

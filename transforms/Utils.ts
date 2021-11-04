@@ -1,0 +1,51 @@
+import { ParserServices } from "@typescript-eslint/typescript-estree";
+import { Identifier, Import, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, TSTypeAnnotation, TSTypeReference, VariableDeclarator } from "jscodeshift";
+import { isAssertionExpression } from "typescript";
+
+export type ImportSpecifierKind = ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier;
+
+export function getTypeNameFromTypeAnnotation(typeAnnotation: TSTypeAnnotation): string {
+  const typeRef = typeAnnotation?.typeAnnotation as TSTypeReference;
+  if (!typeRef)
+    return "";
+  
+  const typeIdentifier = typeRef.typeName as Identifier;
+  if (!typeIdentifier)
+    return "";
+  
+  return typeIdentifier.name;
+}
+
+export function getDeclaredTypeName(node: Identifier, services: ParserServices): string {
+  if (node.typeAnnotation)
+    return getTypeNameFromTypeAnnotation(node.typeAnnotation as TSTypeAnnotation);
+
+  const { program, esTreeNodeToTSNodeMap } = services;
+  const checker = program.getTypeChecker();
+  const esTreeNodeToTSNode = (esNode) => esTreeNodeToTSNodeMap.get(esNode);
+  
+  const tsNode = esTreeNodeToTSNode((node as any).original!);
+  const type = checker.getTypeAtLocation(tsNode);
+
+  return type?.symbol?.escapedName.toString() || "";
+}
+
+// Ensure default specifiers are before import specifiers, then sort alphabetically
+// Namespace specifiers are always the only import so sorting is not needed
+export function sortImports(imports: ImportSpecifierKind[]): ImportSpecifierKind[] {
+  return imports.sort((a, b) => {
+    if (a.type !== b.type) {
+      if (a.type === "ImportDefaultSpecifier")
+        return 1;
+      if (b.type === "ImportDefaultSpecifier")
+        return -1;
+    }
+    a = a as ImportSpecifier;
+    b = b as ImportSpecifier;
+    if (a.imported.name.toLowerCase() > b.imported.name.toLowerCase())
+      return 1;
+    if (a.imported.name.toLowerCase() < b.imported.name.toLowerCase())
+      return -1;
+    return 0;
+  });
+}

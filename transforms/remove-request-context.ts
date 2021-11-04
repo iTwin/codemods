@@ -1,10 +1,14 @@
 import { API, ASTPath, CallExpression, ExpressionStatement, FileInfo, FunctionDeclaration, Identifier, ImportDeclaration, importDeclaration, ImportSpecifier, MemberExpression, StringLiteral, TSTypeAnnotation, TSTypeReference } from 'jscodeshift';
+import { getTypeNameFromTypeAnnotation } from './Utils';
+
+// TODO: Redo this type support
 
 export default function transformer(file: FileInfo, api: API) {
   const j = api.jscodeshift;
   const root = j(file.source);
-  
+
   // Delete import declaration if ClientRequestContext is only import
+  // TODO: If this is the first import, file comments are not properly preserved.
   root.find(ImportDeclaration)
     .filter((path: ASTPath<ImportDeclaration>) => {
       const packageName = (path.value.source as StringLiteral).value;
@@ -36,43 +40,27 @@ export default function transformer(file: FileInfo, api: API) {
   root.find(FunctionDeclaration)
     .replaceWith((path: ASTPath<FunctionDeclaration>) => {
       path.value.params = path.value.params.filter((param) => {
-        const typeAnnotation = (param as Identifier).typeAnnotation as TSTypeAnnotation;
-        if (!typeAnnotation)
-          return true;
-        
-        const typeReference = typeAnnotation.typeAnnotation as TSTypeReference
-        if (!typeReference)
-          return true;
-        
-        const typeName = typeReference.typeName as Identifier;
-        if (!typeName || typeName.name !== "ClientRequestContext")
-          return true;
-
-        return false;
-        });
+        const type = getTypeNameFromTypeAnnotation((param as Identifier).typeAnnotation as TSTypeAnnotation);
+        return type !== "ClientRequestContext";
+      });
 
       return path.node;
     });
 
   // Delete all calls to "requestContext.enter()"
-  root.find(ExpressionStatement)
-    .filter((path: ASTPath<ExpressionStatement>) => {
-      const expression = (path.value.expression as CallExpression).callee as MemberExpression;
-      if (!expression)
-        return false;
-      
-      const object = expression.object as Identifier;
-      const property = expression.property as Identifier;
-        
+  root.find(j.CallExpression)
+    .filter((path: ASTPath<CallExpression>) => {
+      const expression = path.value.callee as MemberExpression; 
+      const object = expression?.object as Identifier;
+      const property = expression?.property as Identifier;
       if (!object || !property)
         return false;
     
-      if (object.name !== "requestContext" && property.name !== "enter")
-        return false;
-      
-      return true;
+      return object.name === "requestContext" && property.name === "enter";
     })
     .remove();
 
   return root.toSource();
 }
+
+module.exports.parser = "ts";
