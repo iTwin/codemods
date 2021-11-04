@@ -1,5 +1,6 @@
-import { BriefcaseDb, BriefcaseManager, IModelDb, IModelHost, IModelHostConfiguration, IModelHubBackend, ProcessDetector, SnapshotDb, StandaloneDb, TxnChangedEntities } from "@bentley/imodeljs-backend";
+import { BriefcaseDb, BriefcaseManager, IModelDb, IModelHost, IModelHostConfiguration, IModelHubBackend, SnapshotDb, StandaloneDb, TxnChangedEntities } from "@bentley/imodeljs-backend";
 import { BriefcaseIdValue, TxnAction } from "@bentley/imodeljs-common";
+import { ProcessDetector } from "@bentley/bentleyjs-core";
 
 class NotIModelDb { }
 
@@ -18,7 +19,7 @@ let iModelHostConfig: IModelHostConfiguration;
 iModelHostConfig.cacheDir;
 
 ProcessDetector.isElectronAppBackend;
-ProcessDetector.isElectronAppBackend
+ProcessDetector.isElectronAppBackend;
 ProcessDetector.isMobileAppBackend;
 ProcessDetector.isNodeProcess;
 

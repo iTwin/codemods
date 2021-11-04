@@ -1,6 +1,8 @@
 import { API, ASTPath, CallExpression, ExpressionStatement, FileInfo, FunctionDeclaration, Identifier, ImportDeclaration, importDeclaration, ImportSpecifier, MemberExpression, StringLiteral, TSTypeAnnotation, TSTypeReference } from 'jscodeshift';
 import { getTypeNameFromTypeAnnotation } from './Utils';
 
+// TODO: Redo this type support
+
 export default function transformer(file: FileInfo, api: API) {
   const j = api.jscodeshift;
   const root = j(file.source);

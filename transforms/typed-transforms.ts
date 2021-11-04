@@ -1,54 +1,71 @@
-import { API, ASTPath, FileInfo, StringLiteral, ImportDeclaration, TSTypeAnnotation, Options, Identifier, MemberExpression, ExpressionStatement, CallExpression, ImportSpecifier } from "jscodeshift";
+import { API, ASTPath, FileInfo, StringLiteral, ImportDeclaration, Options, Identifier, MemberExpression, CallExpression, ImportSpecifier } from "jscodeshift";
 import { AST, parse, parseAndGenerateServices, TSESTreeOptions } from "@typescript-eslint/typescript-estree";
-import { TypeChecker } from "typescript";
-import { Parser } from "./Parser";
 import { ParserServices } from "@typescript-eslint/typescript-estree";
-import { getDeclaredTypeName } from "./Utils";
+import { getDeclaredTypeName, ImportSpecifierKind, sortImports } from "./Utils";
 import { Type, finalize } from "ast-types";
 
-interface ClassMember {
-  classMember: string;
-  isStatic?: boolean;
-}
-
-// const renamedClasses = new Map<string, Map<string, string>>([
-//   ["@bentley/imodeljs-common", new Map<string, string>([
-//     ["AnalysisStyleScalar", "AnalysisStyleThematic"],
-//     ["AnalysisStyleScalarProps", "AnalysisStyleThematicProps"],
-//   ])],
-// ]);
-
-const renamedClasses = new Map<string, string>([
+const changedImports = new Map<string, string>([
   // core-common
-  ["AnalysisStyleScalar", "AnalysisStyleThematic"],
-  ["AnalysisStyleScalarProps", "AnalysisStyleThematicProps"],
-]);
-
-const renamedProperties = new Map<string, ClassMember>([
-  // core-common
-  ["AnalysisStyle.scalar", { classMember: "AnalysisStyle.thematic" }],
-  ["BriefcaseIdValue.Standalone", { classMember: "BriefcaseIdValue.Unassigned", isStatic: true }],
-  ["BriefcaseIdValue.DeprecatedStandalone", { classMember: "BriefcaseIdValue.Unassigned", isStatic: true }],
-  ["CodeSpec.specScopeType", { classMember: "CodeSpec.scopeType" }],
-  ["DisplayStyleSettings.excludedElements", { classMember: "DisplayStyleSettings.excludedElementIds" }],
-  ["DisplayStyleOverridesOptions.includeProjectSpecific", { classMember: "DisplayStyleOverridesOptions.includeITwinSpecific" }],
+  ["@bentley/imodeljs-common.AnalysisStyleScalar", "@bentley/imodeljs-common.AnalysisStyleThematic"],
+  ["@bentley/imodeljs-common.AnalysisStyleScalarProps", "@bentley/imodeljs-common.AnalysisStyleThematicProps"],
   // core-backend
-  ["IModelDb.changeSetId", { classMember: "IModelDb.changeset.id" }],
-  ["SnapshotDb.filePath", { classMember: "SnapshotDb.pathName" }],
-  ["StandaloneDb.filePath", { classMember: "StandaloneDb.pathName" }],
-  ["TxnChangedEntities.inserted", { classMember: "TxnChangedEntities.inserts" }],
-  ["TxnChangedEntities.deleted", { classMember: "TxnChangedEntities.deletes" }],
-  ["TxnChangedEntities.updated", { classMember: "TxnChangedEntities.updates" }],  
+  ["@bentley/imodeljs-backend.BriefcaseIdValue", "@bentley/imodeljs-common.BriefcaseIdValue"],
+  ["@bentley/imodeljs-backend.DocumentCarrier", ""],
+  ["@bentley/imodeljs-backend.InformationCarrierElement", ""],
+  ["@bentley/imodeljs-backend.Platform", "@bentley/bentleyjs-core.ProcessDetector"],
+  ["@bentley/imodeljs-backend.TxnAction", "@bentley/imodeljs-common.TxnAction"],
+
+  // core-frontend
+  ["@bentley/imodeljs-frontend.UnitSystemKey", "@bentley/imodeljs-quantity.UnitSystemKey"],
+  ["@bentley/imodeljs-frontend.RemoteBriefcaseConnection", "@bentley/imodeljs-frontend.CheckpointConnection"],
 
 ]);
 
-const renamedFunctions = new Map<string, ClassMember>([
+// If member ends in () it is a function
+// If class is surrounded with [], it is describing the rename of a static member
+const changedMembers = new Map<string, string>([
   // core-common
-  ["IModelVersion.fromJson", { classMember: "IModelVersion.fromJSON", isStatic: true }],
+  ["AnalysisStyle.scalar", "AnalysisStyle.thematic" ],
+  ["[BriefcaseIdValue].Standalone", "[BriefcaseIdValue].Unassigned"],
+  ["[BriefcaseIdValue].DeprecatedStandalone", "[BriefcaseIdValue].Unassigned"],
+  ["Code.getValue()", "Code.value"], 
+  ["CodeSpec.specScopeType", "CodeSpec.scopeType" ],
+  ["DisplayStyleSettings.excludedElements", "DisplayStyleSettings.excludedElementIds" ],
+  ["DisplayStyleOverridesOptions.includeProjectSpecific", "DisplayStyleOverridesOptions.includeITwinSpecific" ],
+  ["[IModelVersion].fromJson()", "[IModelVersion].fromJSON()"],
+
   // core-backend
-  ["IModelDb.clearSqliteStatementCache", { classMember: "IModelDb.clearCaches" }],
-  ["IModelDb.clearStatementCache", { classMember: "IModelDb.clearCaches" }],
+  ["IModelHostConfiguration.briefcaseCacheDir", "IModelHostConfiguration.cacheDir" ],
+  ["IModelDb.clearSqliteStatementCache()", "IModelDb.clearCaches()" ],
+  ["IModelDb.clearStatementCache()", "IModelDb.clearCaches()" ],
+  ["IModelDb.changeSetId", "IModelDb.changeset.id" ],
+  ["[IModelHost].iModelClient", "[IModelHubBackend].iModelClient" ],
+  ["[Platform].isDesktop", "[ProcessDetector].isElectronAppBackend"],
+  ["[Platform].isElectron", "[ProcessDetector].isElectronAppBackend"],
+  ["[Platform].isMobile", "[ProcessDetector].isMobileAppBackend"],
+  ["[Platform].isNodeJs", "[ProcessDetector].isNodeProcess"],
+  ["SnapshotDb.filePath", "SnapshotDb.pathName" ],
+  ["StandaloneDb.filePath", "StandaloneDb.pathName" ],
+  ["TxnChangedEntities.inserted", "TxnChangedEntities.inserts" ],
+  ["TxnChangedEntities.deleted", "TxnChangedEntities.deletes" ],
+  ["TxnChangedEntities.updated", "TxnChangedEntities.updates" ],  
+
+  // core-frontend
+  ["CheckpointConnection.open()", "CheckpointConnection.openRemote()"],
+  ["DecorateContext.screenViewport", "DecorateContext.viewport"],
+  ["[IModelApp].iModelClient", "[IModelHubFrontend].iModelClient"],
+  ["Viewport.featureOverrideProvider", "Viewport.featureOverrideProviders"],
+  ["Viewport.setRedrawPending()", "Viewport.requestRedraw()"],
+
+  // core-geometry
+  ["BSplineCurve3dBase.createThroughPoints()", "BSplineCurve3dBase.createFromInterpolationCurve3dOptions()"],
+  ["TransitionSpiralProps.curveLength", "TransitionSpiralProps.length"],
+  ["TransitionSpiralProps.fractionInterval", "TransitionSpiralProps.activeFractionInterval"],
+  ["TransitionSpiralProps.intervalFractions", "TransitionSpiralProps.activeFractionInterval"],
+  ["InterpolationCurve3dOptions.isChordLenTangent", "InterpolationCurve3dOptions.isChordLenTangents"],
+
 ]);
+
 
 interface ParserState {
   services?: ParserServices;
@@ -71,8 +88,7 @@ function parseWithServices(j, file: FileInfo, projectPath) {
   parserState.options = { 
     filePath: file.path, 
     tsconfigRootDir: process.cwd(), 
-    project: projectPath, 
-    preserveNodeMaps: true 
+    project: projectPath
   };
   return {
     ast: j(file.source),
@@ -87,87 +103,193 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   const j = api.jscodeshift;
   const { ast, services } = parseWithServices(j, file, options?.tsConfigPath);
   
-  const callExpressions = ast.find(j.CallExpression);
+  // Fix imports
+  const changedClasses = new Map<string, string>();
+  const newImports = new Map<string, ImportSpecifier[]>();
 
-  // Replace all instances of Code.getValue() with Code.value
-  callExpressions.filter((path: ASTPath<CallExpression>) => {
-      const expression = path.value.callee as MemberExpression;
-      const object = expression?.object as Identifier;
-      const property = expression?.property as Identifier;
-      if (!object || !property)
-        return false;
-    
-      const objectType = getDeclaredTypeName(object, services);
-      return objectType === "Code" && property.name === "getValue";
-    })
-    .replaceWith((path: ASTPath<CallExpression>) => {
-      const name = ((path.value.callee as MemberExpression).object as Identifier).name;
-      return j.memberExpression(
-        j.identifier(name),
-        j.identifier("value")
-      );
+  // Update import renames within same package, build list of class renames, and imports to update
+  // const importDeclarations = ast.find(j.ImportDeclaration);
+  ast.find(j.ImportDeclaration)
+    .replaceWith((path: ASTPath<ImportDeclaration>) => {
+      const packageName = (path.value.source as StringLiteral).value;
+      const newSpecifiers: ImportSpecifierKind[] = [];
+      for (const specifier of path.value.specifiers) {
+        if (specifier.type === "ImportSpecifier") {
+          const key = `${packageName}.${specifier.imported.name}`;
+          if (!changedImports.has(key)) {
+            newSpecifiers.push(specifier);
+          } else {
+            const [newPackageName, newImport] = changedImports.get(key).split('.');
+            if (newPackageName) {
+              if (newImport !== specifier.imported.name) {
+                // Class was renamed, add it to changedClasses
+                changedClasses.set(specifier.imported.name, newImport)
+              }
+
+              const newSpecifier = j.importSpecifier(j.identifier(newImport));
+              if (newPackageName === packageName) {
+                // Import renamed within same package
+                newSpecifiers.push(newSpecifier);
+              } else {
+                if (newImports.has(newPackageName))
+                  newImports.get(newPackageName).push(newSpecifier);
+                else
+                  newImports.set(newPackageName, [newSpecifier]);
+              }
+            }
+          }
+        } else {
+          // Import is either default or namespace import
+          newSpecifiers.push(specifier);
+        }
+      }
+
+      return j.importDeclaration(sortImports(newSpecifiers), j.stringLiteral(packageName));
     });
 
+  // Update existing imports with classes moved between packages
+  ast.find(j.ImportDeclaration)
+    .filter((path: ASTPath<ImportDeclaration>) => {
+      return newImports.has((path.value.source as StringLiteral).value);
+    })
+    .replaceWith((path: ASTPath<ImportDeclaration>) => {
+      const packageName = (path.value.source as StringLiteral).value;
+      const newSpecifiers = path.value.specifiers;
+      newSpecifiers.push(...newImports.get(packageName));
+      newImports.delete(packageName);
+
+      return j.importDeclaration(sortImports(newSpecifiers), j.stringLiteral(packageName));
+    })
+
+  // Add new imports for classes moved between packages
+  for (const packageName of newImports.keys()) {
+    const specifiers = newImports.get(packageName);
+    const newImport = j.importDeclaration(sortImports(specifiers), j.stringLiteral(packageName));
+    const importDeclarations = ast.find(j.ImportDeclaration);
+    // Insert after last import
+    j(importDeclarations.at(importDeclarations.length - 1).get()).insertAfter(newImport);
+  }
+
+  // Delete empty imports
+  // ast.find(j.ImportDeclaration)
+  //   .filter((path: ASTPath<ImportDeclaration>) => {
+  //     return path.value.specifiers.length === 0;
+  //   })
+  //   .remove();
+
   // Rename class functions
-  callExpressions.filter((path: ASTPath<CallExpression>) => {
-    const expression = path.value.callee as MemberExpression;
-    const object = expression?.object as Identifier;
-    const property = expression?.property as Identifier;
-    if (!object || !property)
-      return false;
-  
-    const objectType = getDeclaredTypeName(object, services);
-    return renamedFunctions.has(`${objectType}.${property.name}`);
-  })
-  .replaceWith((path: ASTPath<CallExpression>) => {
-    const expression = path.value.callee as MemberExpression;
-    const object = expression.object as Identifier;
-    const property = expression.property as Identifier;
-    const objectType = getDeclaredTypeName(object, services);
-    const newFunction = renamedFunctions.get(`${objectType}.${property.name}`);
-    const objectName = newFunction.isStatic ? newFunction.classMember.split('.')[0] : object.name;
-    path.value.callee = j.memberExpression(
-      j.identifier(objectName),
-      j.identifier(newFunction.classMember.split('.')[1])
-    );
-    return path.value;
-  });
+  ast.find(j.CallExpression)
+    .filter((path: ASTPath<CallExpression>) => {
+      if (path.value.callee.type !== "MemberExpression")
+        return false;
+
+      const expression = path.value.callee as MemberExpression;
+      if (expression.object.type === "ThisExpression")
+        return false;
+
+      if (expression.object.type !== "Identifier" || expression.property.type !== "Identifier")
+        return false;
+      const object = expression.object as Identifier;
+      const property = expression.property as Identifier;
+    
+      const isStatic = object.name?.charAt(0) === object.name?.charAt(0).toUpperCase();
+      const objectType = getDeclaredTypeName(object, services);
+      const objectName = isStatic ? `[${objectType}]` : objectType;
+
+      return changedMembers.has(`${objectName}.${property.name}()`);
+    })
+    .replaceWith((path: ASTPath<CallExpression>) => {
+      const expression = path.value.callee as MemberExpression;
+      const object = expression.object as Identifier;
+      const property = expression.property as Identifier;
+
+      const isStatic = object.name.charAt(0) === object.name.charAt(0).toUpperCase();
+      const objectType = getDeclaredTypeName(object, services);
+      const objectName = isStatic ? `[${objectType}]` : objectType;
+      const newMemberParsed = changedMembers.get(`${objectName}.${property.name}()`).split('.');
+      const isNewMemberStatic = newMemberParsed[0].charAt(0) === "[";
+      if (isStatic !== isNewMemberStatic)
+        throw new Error("Replacing static member with non static member and the reverse is not yet supported")
+
+      // Strip [] from static object name
+      const newObjectName = isNewMemberStatic ? newMemberParsed[0].slice(1, -1) : object.name;
+      const newMemberName = newMemberParsed.slice(1).join('.');
+      const isNewMemberFunction = newMemberName.endsWith("()");
+
+      if (isNewMemberFunction) {
+        return j.callExpression(
+          j.memberExpression(
+            j.identifier(newObjectName),
+            j.identifier(newMemberName.slice(0, -2))
+          ), 
+          path.value.arguments
+        );
+      } else {
+        return j.memberExpression(
+          j.identifier(newObjectName),
+          j.identifier(newMemberName)
+        )
+      }
+    });
 
   // Rename class properties
-  const memberExpressions = ast.find(j.MemberExpression);
-  memberExpressions.filter((path: ASTPath<MemberExpression>) => {
-    const object = path.value.object as Identifier;
-    const property = path.value.property as Identifier;
-    if (!object || !property)
-      return false;
+  ast.find(j.MemberExpression)
+    .filter((path: ASTPath<MemberExpression>) => {
+      if (path.value.object.type === "ThisExpression")
+        return false;
 
-    const objectType = getDeclaredTypeName(object, services);
-    return renamedProperties.has(`${objectType}.${property.name}`);
-  })
-  .replaceWith((path: ASTPath<MemberExpression>) => {
-    const object = path.value.object as Identifier;
-    const property = path.value.property as Identifier;
-    const objectType = getDeclaredTypeName(object, services);
-    const newProperty = renamedProperties.get(`${objectType}.${property.name}`);
-    const parsedMember = newProperty.classMember.split('.');
-    
-    const objectName = newProperty.isStatic ? parsedMember[0] : object.name;
-    const propertyName = parsedMember.slice(1).join('.');
-    
-    return j.memberExpression(
-      j.identifier(objectName),
-      j.identifier(propertyName)
-    );
-  });
+      if (path.value.object.type !== "Identifier" || path.value.property.type !== "Identifier")
+        return false;
+      const object = path.value.object as Identifier;
+      const property = path.value.property as Identifier;
+
+      const isStatic = object.name.charAt(0) === object.name.charAt(0).toUpperCase();
+      const objectType = getDeclaredTypeName(object, services);
+      const objectName = isStatic ? `[${objectType}]` : objectType;
+  
+      return changedMembers.has(`${objectName}.${property.name}`);
+      })
+    .replaceWith((path: ASTPath<MemberExpression>) => {
+      const object = path.value.object as Identifier;
+      const property = path.value.property as Identifier;
+
+      const isStatic = object.name.charAt(0) === object.name.charAt(0).toUpperCase();
+      const objectType = getDeclaredTypeName(object, services);
+      const objectName = isStatic ? `[${objectType}]` : objectType;
+      const newMemberParsed = changedMembers.get(`${objectName}.${property.name}`).split('.');
+      const isNewMemberStatic = newMemberParsed[0].charAt(0) === "[";
+      if (isStatic !== isNewMemberStatic)
+        throw new Error("Replacing static member with non static member and the reverse is not yet supported")
+
+      // Strip [] from static object name
+      const newObjectName = isNewMemberStatic ? newMemberParsed[0].slice(1, -1) : object.name;
+      const newMemberName = newMemberParsed.slice(1).join('.');
+      const isNewMemberFunction = newMemberName.endsWith("()");
+
+      if (isNewMemberFunction) {
+        return j.callExpression(
+          j.memberExpression(
+            j.identifier(newObjectName),
+            j.identifier(newMemberName.slice(0, -2))
+          ),
+          [ /* Leave arguments param blank for now */ ]
+        );
+      } else {
+        return j.memberExpression(
+          j.identifier(newObjectName),
+          j.identifier(newMemberName)
+        );
+      }
+    });
 
   // Rename classes
-  const identifiers = ast.find(j.Identifier)
-  identifiers.filter((path: ASTPath<Identifier>) => {
-    return renamedClasses.has(path.value.name)
-  })
-  .replaceWith((path: ASTPath<Identifier>) => {
-    return j.identifier(renamedClasses.get(path.value.name));
-  });
+  ast.find(j.Identifier)
+    .filter((path: ASTPath<Identifier>) => {
+      return changedClasses.has(path.value.name)
+    })
+    .replaceWith((path: ASTPath<Identifier>) => {
+      return j.identifier(changedClasses.get(path.value.name));
+    });
 
   // Rename imports
   // ast.find(ImportDeclaration)
@@ -187,7 +309,8 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   //     return path.node;
   //   });
 
-  return ast.toSource();
+  // Arbitrarily high value to prevent unintended line wrapping
+  return ast.toSource({ wrapColumn: 1024 });
 }
 
 export const parser = { 
@@ -200,7 +323,6 @@ export const parser = {
         loc: true,
         range: true,
         tokens: true,
-        errorOnTypeScriptSyntacticAndSemanticIssues: true,
       });
       parserState.services = services;
       return ast;

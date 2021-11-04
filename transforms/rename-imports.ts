@@ -69,5 +69,3 @@ export default function transformer(file: FileInfo, api: API) {
     })
     .toSource();
 }
-
-module.exports.parser = "ts";
