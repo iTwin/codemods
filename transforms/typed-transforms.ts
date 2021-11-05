@@ -8,6 +8,7 @@ const changedImports = new Map<string, string>([
   // core-common
   ["@bentley/imodeljs-common.AnalysisStyleScalar", "@bentley/imodeljs-common.AnalysisStyleThematic"],
   ["@bentley/imodeljs-common.AnalysisStyleScalarProps", "@bentley/imodeljs-common.AnalysisStyleThematicProps"],
+  
   // core-backend
   ["@bentley/imodeljs-backend.BriefcaseIdValue", "@bentley/imodeljs-common.BriefcaseIdValue"],
   ["@bentley/imodeljs-backend.DocumentCarrier", ""],
@@ -18,7 +19,6 @@ const changedImports = new Map<string, string>([
   // core-frontend
   ["@bentley/imodeljs-frontend.UnitSystemKey", "@bentley/imodeljs-quantity.UnitSystemKey"],
   ["@bentley/imodeljs-frontend.RemoteBriefcaseConnection", "@bentley/imodeljs-frontend.CheckpointConnection"],
-
 ]);
 
 // If member ends in () it is a function
@@ -63,7 +63,6 @@ const changedMembers = new Map<string, string>([
   ["TransitionSpiralProps.fractionInterval", "TransitionSpiralProps.activeFractionInterval"],
   ["TransitionSpiralProps.intervalFractions", "TransitionSpiralProps.activeFractionInterval"],
   ["InterpolationCurve3dOptions.isChordLenTangent", "InterpolationCurve3dOptions.isChordLenTangents"],
-
 ]);
 
 
@@ -75,14 +74,12 @@ interface ParserState {
 const parserState: ParserState = {};
 
 function parseWithServices(j, file: FileInfo, projectPath) {
-  // Add custom AST node definition for TSClassImplements
+  // Add custom AST node definitions
   const { def } = Type;
   def("TSInterfaceHeritage")
     .bases("Node");
-
   def("TSClassImplements")
-    .bases("Node");
-  
+    .bases("Node"); 
   finalize();
 
   parserState.options = { 
@@ -108,7 +105,6 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   const newImports = new Map<string, ImportSpecifier[]>();
 
   // Update import renames within same package, build list of class renames, and imports to update
-  // const importDeclarations = ast.find(j.ImportDeclaration);
   ast.find(j.ImportDeclaration)
     .replaceWith((path: ASTPath<ImportDeclaration>) => {
       const packageName = (path.value.source as StringLiteral).value;
