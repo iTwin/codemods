@@ -8,4 +8,3 @@ goto :EOF
 call %~dp0node_modules\.bin\jscodeshift -t %~dp0transforms\typed-transforms.ts --extensions=ts,tsx --tsConfigPath=%1 %2
 call %~dp0node_modules\.bin\jscodeshift -t %~dp0transforms\itwin-codemods.ts --extensions=ts --parser=ts %2
 call %~dp0node_modules\.bin\jscodeshift -t %~dp0transforms\itwin-codemods.ts --extensions=tsx --parser=tsx %2
-echo %~dp0

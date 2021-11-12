@@ -23,3 +23,7 @@ describe("core-frontend transforms", () => {
 describe("core-geometry transforms", () => {
   defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/geometry');
 });
+
+describe("ui transforms", () => {
+  defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/ui-core');
+});
