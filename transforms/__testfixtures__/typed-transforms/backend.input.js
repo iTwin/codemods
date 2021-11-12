@@ -1,4 +1,4 @@
-import { BriefcaseDb, BriefcaseIdValue, BriefcaseManager, DocumentCarrier, IModelDb, IModelHost, IModelHostConfiguration, InformationCarrierElement, Platform, SnapshotDb, StandaloneDb, TxnAction, TxnChangedEntities } from "@bentley/imodeljs-backend";
+import { AutoPush, BriefcaseDb, BriefcaseIdValue, BriefcaseManager, DocumentCarrier, IModelDb, IModelHost, IModelHostConfiguration, InformationCarrierElement, Platform, SnapshotDb, StandaloneDb, TxnAction, TxnChangedEntities } from "@bentley/imodeljs-backend";
 
 class NotIModelDb { }
 

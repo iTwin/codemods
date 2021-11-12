@@ -10,6 +10,7 @@ const changedImports = new Map<string, string>([
   ["@bentley/imodeljs-common.AnalysisStyleScalarProps", "@bentley/imodeljs-common.AnalysisStyleThematicProps"],
   
   // core-backend
+  ["@bentley/imodeljs-backend.AutoPush", ""],
   ["@bentley/imodeljs-backend.BriefcaseIdValue", "@bentley/imodeljs-common.BriefcaseIdValue"],
   ["@bentley/imodeljs-backend.DocumentCarrier", ""],
   ["@bentley/imodeljs-backend.InformationCarrierElement", ""],
@@ -17,8 +18,17 @@ const changedImports = new Map<string, string>([
   ["@bentley/imodeljs-backend.TxnAction", "@bentley/imodeljs-common.TxnAction"],
 
   // core-frontend
+  ["@bentley/imodeljs-frontend.AppearanceOverrideProps", "@bentley/imodeljs-common.AppearanceOverrideProps"],
+  ["@bentley/imodeljs-frontend.AsyncMethodsOf", "@bentley/bentleyjs-core.AsyncMethodsOf"],
+  ["@bentley/imodeljs-frontend.AsyncFunction", "@bentley/bentleyjs-core.AsyncFunction"],
+  ["@bentley/imodeljs-frontend.EmphasizeElementsProps", "@bentley/imodeljs-common.EmphasizeElementsProps"],
+  ["@bentley/imodeljs-frontend.PromiseReturnType", "@bentley/bentleyjs-core.PromiseReturnType"],
+  ["@bentley/imodeljs-frontend.FeatureOverrideType", "@bentley/imodeljs-common.FeatureOverrideType"],
   ["@bentley/imodeljs-frontend.UnitSystemKey", "@bentley/imodeljs-quantity.UnitSystemKey"],
   ["@bentley/imodeljs-frontend.RemoteBriefcaseConnection", "@bentley/imodeljs-frontend.CheckpointConnection"],
+
+  // core-react
+  ["@bentley/ui-core.NumericInput", "@bentley/ui-core.NumberInput"]
 ]);
 
 // If member ends in () it is a function
@@ -63,6 +73,10 @@ const changedMembers = new Map<string, string>([
   ["TransitionSpiralProps.fractionInterval", "TransitionSpiralProps.activeFractionInterval"],
   ["TransitionSpiralProps.intervalFractions", "TransitionSpiralProps.activeFractionInterval"],
   ["InterpolationCurve3dOptions.isChordLenTangent", "InterpolationCurve3dOptions.isChordLenTangents"],
+
+  // core-react
+  ["LoadingPromptProps.isDeterministic", "LoadingPromptProps.isDeterminate"],
+  ["TabsProps.onClickLabel()", "TabsProps.onActivateTab()"]
 ]);
 
 
@@ -100,10 +114,11 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   const j = api.jscodeshift;
   const { ast, services } = parseWithServices(j, file, options?.tsConfigPath);
   
-  // Fix imports
+  // Transform imports
   const changedClasses = new Map<string, string>();
   const newImports = new Map<string, ImportSpecifier[]>();
 
+  // TODO: Ensure no duplicate imports
   // Update import renames within same package, build list of class renames, and imports to update
   ast.find(j.ImportDeclaration)
     .replaceWith((path: ASTPath<ImportDeclaration>) => {
@@ -125,7 +140,9 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
               const newSpecifier = j.importSpecifier(j.identifier(newImport));
               if (newPackageName === packageName) {
                 // Import renamed within same package
-                newSpecifiers.push(newSpecifier);
+                if (!newSpecifiers.some(spec => { return spec.name === newSpecifier.name; })) {
+                  newSpecifiers.push(newSpecifier);
+                }
               } else {
                 if (newImports.has(newPackageName))
                   newImports.get(newPackageName).push(newSpecifier);
@@ -151,7 +168,10 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
     .replaceWith((path: ASTPath<ImportDeclaration>) => {
       const packageName = (path.value.source as StringLiteral).value;
       const newSpecifiers = path.value.specifiers;
-      newSpecifiers.push(...newImports.get(packageName));
+      for (const newImport of newImports.get(packageName)) {
+        if (!newSpecifiers.some(spec => { return spec.name === newImport.name; }))
+          newSpecifiers.push(newImport);
+      }
       newImports.delete(packageName);
 
       return j.importDeclaration(sortImports(newSpecifiers), j.stringLiteral(packageName));
