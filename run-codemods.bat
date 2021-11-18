@@ -1,7 +1,7 @@
 @echo off
 if NOT "%2" == "" if "%3" == "" goto START
-echo Error: Incorrect arguments provided, please specify path to tsconfig and directory to transform with
-echo run-codemods.bat tsconfig.json ./src
+echo Error: Incorrect arguments provided, please specify path to tsconfig and src directory with
+echo run-codemods.bat TSCONFIG_PATH SRC_PATH
 goto :EOF
 
 :START
