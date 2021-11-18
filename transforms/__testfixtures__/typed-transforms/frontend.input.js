@@ -1,4 +1,4 @@
-import { AppearanceOverrideProps, AsyncMethodsOf, AsyncFunction, CheckpointConnection, DecorateContext, EmphasizeElementsProps, FeatureOverrideType, findAvailableRealityModels, findAvailableUnattachedRealityModels, IModelApp, PromiseReturnType, RemoteBriefcaseConnection, UnitSystemKey, Viewport } from "@bentley/imodeljs-frontend";
+import { AppearanceOverrideProps, AsyncMethodsOf, AsyncFunction, CheckpointConnection, DecorateContext, EmphasizeElementsProps, Environment, FeatureOverrideType, findAvailableRealityModels, findAvailableUnattachedRealityModels, IModelApp, PromiseReturnType, RemoteBriefcaseConnection, UnitSystemKey, Viewport } from "@bentley/imodeljs-frontend";
 
 let checkpointConnection: CheckpointConnection;
 checkpointConnection.open();

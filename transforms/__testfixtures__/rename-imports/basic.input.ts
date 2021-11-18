@@ -50,5 +50,6 @@ import { geonamesModule } from "@bentley/geonames-extension";
 import { mapLayersModule } from "@bentley/map-layers";
 import { rpcFullStackTestModule } from "@bentley/rpcinterface-full-stack-tests";
 import { imodelhubClientTestModule } from "@bentley/imodelhub-client-tests";
+import { authModule } from "@bentley/frontend-authorization-client";
 
 const notAnImport = "@bentley/imodeljs-backend";

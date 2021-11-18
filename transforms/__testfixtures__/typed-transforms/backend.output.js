@@ -1,4 +1,4 @@
-import { BriefcaseDb, BriefcaseManager, IModelDb, IModelHost, IModelHostConfiguration, IModelHubBackend, SnapshotDb, StandaloneDb, TxnChangedEntities } from "@bentley/imodeljs-backend";
+import { BriefcaseDb, BriefcaseManager, IModelDb, IModelHost, IModelHostConfiguration, SnapshotDb, StandaloneDb, TxnChangedEntities } from "@bentley/imodeljs-backend";
 import { BriefcaseIdValue, TxnAction } from "@bentley/imodeljs-common";
 import { ProcessDetector } from "@bentley/bentleyjs-core";
 

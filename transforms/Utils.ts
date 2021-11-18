@@ -4,6 +4,22 @@ import { isAssertionExpression } from "typescript";
 
 export type ImportSpecifierKind = ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier;
 
+export class ImportSet extends Set<ImportSpecifierKind> {
+  add(other: ImportSpecifierKind): this {
+
+    for (const value of this.values()) {
+      if (value.type === other.type) {
+        // Multiple namespace or default specifiers are not possible
+        if ((value as ImportSpecifier).imported.name === (other as ImportSpecifier).imported.name)
+          return this;
+      }
+    }
+    
+    super.add(other);
+    return this;
+  }
+}
+
 export function getTypeNameFromTypeAnnotation(typeAnnotation: TSTypeAnnotation): string {
   const typeRef = typeAnnotation?.typeAnnotation as TSTypeReference;
   if (!typeRef)

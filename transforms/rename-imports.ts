@@ -54,7 +54,10 @@ const changedPackages = {
   "@bentley/geonames-extension": "@itwin/geonames-extension",
   "@bentley/map-layers": "@itwin/map-layers",
   "@bentley/rpcinterface-full-stack-tests": "@itwin/rpcinterface-full-stack-tests",
-  "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests"
+  "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests",
+
+  // Packages outside itwinjs-core
+  "@bentley/frontend-authorization-client": "@itwin/browser-authorization"
 }
 
 export default function transformer(file: FileInfo, api: API) {

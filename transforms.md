@@ -58,6 +58,7 @@ A number of packages have been renamed to use the @itwin scope rather than the @
 | @bentley/map-layers                    | @itwin/map-layers                    | [x]
 | @bentley/rpcinterface-full-stack-tests | @itwin/rpcinterface-full-stack-tests | [x]
 | @bentley/imodelhub-client-tests        | @itwin/imodelhub-client-tests        | [x]
+| @bentley/frontend-authorization-client | @itwin/browser-authorization        | [x]
 
 ## Removal of previously deprecated APIs
 
@@ -161,16 +162,17 @@ In this 3.0 major release, we have removed several APIs that were previously mar
 | `Viewport.setFlashed`                         | [Viewport.flashedId]($frontend)                                    | [ ]
 | `Viewport.setRedrawPending`                   | [Viewport.requestRedraw]($frontend)                                | [x]
 | `WebAppViewer`                                | *eliminated*                                                       | [ ]
+| `Environment`                                 | [Environment]($common)                                             | [x]
 
 ### @itwin/core-geometry
 
 | Removed                                         | Replacement                                                | Completed
 | ----------------------------------------------- | ---------------------------------------------------------- | ----------
-| `BSplineCurve3dBase.createThroughPoints`        | `BSplineCurve3dBase.createFromInterpolationCurve3dOptions` | [ ]
+| `BSplineCurve3dBase.createThroughPoints`        | `BSplineCurve3dBase.createFromInterpolationCurve3dOptions` | [x]
 | `TransitionSpiralProps.curveLength`             | `TransitionSpiralProps.length`                             | [ ]
 | `TransitionSpiralProps.fractionInterval`        | `TransitionSpiralProps.activeFractionInterval`             | [ ]
 | `TransitionSpiralProps.intervalFractions`       | `TransitionSpiralProps.activeFractionInterval`             | [ ]
-| `InterpolationCurve3dOptions.isChordLenTangent` | `InterpolationCurve3dOptions.isChordLenTangents`           | [ ]
+| `InterpolationCurve3dOptions.isChordLenTangent` | `InterpolationCurve3dOptions.isChordLenTangents`           | [x]
 | `Point3dArray.createRange`                      | `Range3d.createFromVariantData`                            | [ ]
 
 ### @bentley/backend-itwin-client
@@ -207,23 +209,23 @@ SAML support has officially been dropped as a supported workflow. All related AP
 | Removed                                                    | Replacement                                                                                                                   | Completed
 | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------
 | `hasFlag`                                                  | `hasSelectionModeFlag` in @itwin/components-react                                                                             | [ ]
-| `StandardEditorNames`                                      | `StandardEditorNames` in @itwin/appui-abstract                                                                                | [ ]
-| `StandardTypeConverterTypeNames`                           | `StandardTypeNames` in @itwin/appui-abstract                                                                                  | [ ]
-| `StandardTypeNames`                                        | `StandardTypeNames` in @itwin/appui-abstract                                                                                  | [ ]
-| `Timeline`                                                 | `TimelineComponent` in @itwin/components-react                                                                                | [ ]
-| `ControlledTreeProps.treeEvents`                           | `ControlledTreeProps.eventsHandler`                                                                                           | [ ]
+| `StandardEditorNames`                                      | `StandardEditorNames` in @itwin/appui-abstract                                                                                | [x]
+| `StandardTypeConverterTypeNames`                           | `StandardTypeNames` in @itwin/appui-abstract                                                                                  | [x]
+| `StandardTypeNames`                                        | `StandardTypeNames` in @itwin/appui-abstract                                                                                  | [x]
+| `Timeline`                                                 | `TimelineComponent` in @itwin/components-react                                                                                | [x]
+| `ControlledTreeProps.treeEvents`                           | `ControlledTreeProps.eventsHandler`                                                                                           | [x]
 | `ControlledTreeProps.visibleNodes`                         | `ControlledTreeProps.model`                                                                                                   | [ ]
 | `MutableTreeModel.computeVisibleNodes`                     | `computeVisibleNodes` in @itwin/components-react                                                                              | [ ]
 | `TreeModelSource.getVisibleNodes`                          | memoized result of `computeVisibleNodes`                                                                                      | [ ]
 | `useVisibleTreeNodes`                                      | `useTreeModel` and `computeVisibleNodes`                                                                                      | [ ]
-| `TreeRendererContext`                                      | _eliminated_                                                                                                                  | [ ]
-| `TreeRendererContextProvider`                              | _eliminated_                                                                                                                  | [ ]
-| `TreeRendererContextConsumer`                              | _eliminated_                                                                                                                  | [ ]
-| `useTreeRendererContext`                                   | _eliminated_                                                                                                                  | [ ]
-| `ExtendedTreeNodeRendererProps`                            | `TreeNodeRendererProps`                                                                                                       | [ ]
-| `SignIn`                                                   | _eliminated_                                                                                                                  | [ ]
+| `TreeRendererContext`                                      | _eliminated_                                                                                                                  | [x]
+| `TreeRendererContextProvider`                              | _eliminated_                                                                                                                  | [x]
+| `TreeRendererContextConsumer`                              | _eliminated_                                                                                                                  | [x]
+| `useTreeRendererContext`                                   | _eliminated_                                                                                                                  | [x]
+| `ExtendedTreeNodeRendererProps`                            | `TreeNodeRendererProps`                                                                                                       | [x]
+| `SignIn`                                                   | _eliminated_                                                                                                                  | [x]
 | All drag & drop related APIs                               | Third party components. E.g. see this [example](https://www.itwinjs.org/sample-showcase/?group=UI+Trees&sample=drag-and-drop) | [ ]
-| `DEPRECATED_Tree`, `BeInspireTree` and related APIs        | `ControlledTree`                                                                                                              | [ ]
+| `DEPRECATED_Tree`, `BeInspireTree` and related APIs        | `ControlledTree`                                                                                                              | [x]
 | `PropertyValueRendererContext.decoratedTextElement`        | `IPropertyValueRenderer` that can properly render a `PropertyRecord`                                                          | [ ]
 | `CommonPropertyGridProps.onPropertyLinkClick`              | `PropertyRecord.links.onClick`                                                                                                | [ ]
 | `onPropertyLinkClick` prop in `usePropertyData`            | `PropertyRecord.links.onClick`                                                                                                | [ ]

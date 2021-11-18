@@ -6,11 +6,11 @@ The full list of completed and planned codemods can be found in [transforms.md](
 
 ## Usage
 
-1. Clone this repo as a peer to the repo you wish to transform
+1. Clone this repo into the same parent directory as the repo you wish to transform
 
-2. npm install
+2. npm install --production
 
-3. In the root of your repo, run codemod with:
+3. In the root of your project's repo, run codemods with:
 
 ```none
 ../codemods/run-codemods.bat TSCONFIG_PATH SRC_PATH
