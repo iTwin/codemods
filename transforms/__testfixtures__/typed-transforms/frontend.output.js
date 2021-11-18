@@ -1,5 +1,5 @@
-import { CheckpointConnection, DecorateContext, findAvailableRealityModels, findAvailableUnattachedRealityModels, IModelHubFrontend, queryRealityData, Viewport } from "@bentley/imodeljs-frontend";
-import { AppearanceOverrideProps, EmphasizeElementsProps, FeatureOverrideType } from "@bentley/imodeljs-common";
+import { CheckpointConnection, DecorateContext, IModelApp, queryRealityData, Viewport } from "@bentley/imodeljs-frontend";
+import { AppearanceOverrideProps, EmphasizeElementsProps, Environment, FeatureOverrideType } from "@bentley/imodeljs-common";
 import { AsyncFunction, AsyncMethodsOf, PromiseReturnType } from "@bentley/bentleyjs-core";
 import { UnitSystemKey } from "@bentley/imodeljs-quantity";
 

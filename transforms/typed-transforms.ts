@@ -1,7 +1,7 @@
 import { API, ASTPath, FileInfo, StringLiteral, ImportDeclaration, Options, Identifier, MemberExpression, CallExpression, ImportSpecifier } from "jscodeshift";
 import { AST, parse, parseAndGenerateServices, TSESTreeOptions } from "@typescript-eslint/typescript-estree";
 import { ParserServices } from "@typescript-eslint/typescript-estree";
-import { getDeclaredTypeName, ImportSpecifierKind, sortImports } from "./Utils";
+import { getDeclaredTypeName, ImportSet, ImportSpecifierKind, sortImports } from "./Utils";
 import { Type, finalize } from "ast-types";
 
 const changedImports = new Map<string, string>([
@@ -26,9 +26,26 @@ const changedImports = new Map<string, string>([
   ["@bentley/imodeljs-frontend.FeatureOverrideType", "@bentley/imodeljs-common.FeatureOverrideType"],
   ["@bentley/imodeljs-frontend.UnitSystemKey", "@bentley/imodeljs-quantity.UnitSystemKey"],
   ["@bentley/imodeljs-frontend.RemoteBriefcaseConnection", "@bentley/imodeljs-frontend.CheckpointConnection"],
+  ["@bentley/imodeljs-frontend.Environment", "@bentley/imodeljs-common.Environment"],
+  ["@bentley/imodeljs-frontend.findAvailableRealityModels", "@bentley/imodeljs-frontend.queryRealityData"],
+  ["@bentley/imodeljs-frontend.findAvailableUnattachedRealityModels", "@bentley/imodeljs-frontend.queryRealityData"],
 
   // core-react
-  ["@bentley/ui-core.NumericInput", "@bentley/ui-core.NumberInput"]
+  ["@bentley/ui-core.NumericInput", "@bentley/ui-core.NumberInput"],
+
+  // ui-components
+  ["@bentley/ui-components.StandardEditorNames", "@bentley/ui-abstract.StandardEditorNames"],
+  ["@bentley/ui-components.StandardTypeConverterTypeNames", "@bentley/ui-abstract.StandardTypeNames"],
+  ["@bentley/ui-components.StandardTypeNames", "@bentley/ui-abstract.StandardTypeNames"],
+  ["@bentley/ui-components.Timeline", "@bentley/ui-components.TimelineComponent"],
+  ["@bentley/ui-components.TreeRendererContext", ""],
+  ["@bentley/ui-components.TreeRendererContextProvider", ""],
+  ["@bentley/ui-components.TreeRendererContextConsumer", ""],
+  ["@bentley/ui-components.useTreeRendererContext", ""],
+  ["@bentley/ui-components.ExtendedTreeNodeRendererProps", "@bentley/ui-components.TreeNodeRendererProps"],
+  ["@bentley/ui-components.SignIn", ""],
+  ["@bentley/ui-components.DEPRECATED_Tree", "@bentley/ui-components.ControlledTree"],
+  ["@bentley/ui-components.BeInspireTree", "@bentley/ui-components.ControlledTree"],
 ]);
 
 // If member ends in () it is a function
@@ -69,14 +86,15 @@ const changedMembers = new Map<string, string>([
 
   // core-geometry
   ["BSplineCurve3dBase.createThroughPoints()", "BSplineCurve3dBase.createFromInterpolationCurve3dOptions()"],
-  ["TransitionSpiralProps.curveLength", "TransitionSpiralProps.length"],
-  ["TransitionSpiralProps.fractionInterval", "TransitionSpiralProps.activeFractionInterval"],
-  ["TransitionSpiralProps.intervalFractions", "TransitionSpiralProps.activeFractionInterval"],
   ["InterpolationCurve3dOptions.isChordLenTangent", "InterpolationCurve3dOptions.isChordLenTangents"],
 
   // core-react
   ["LoadingPromptProps.isDeterministic", "LoadingPromptProps.isDeterminate"],
-  ["TabsProps.onClickLabel()", "TabsProps.onActivateTab()"]
+  ["TabsProps.onClickLabel()", "TabsProps.onActivateTab()"],
+
+  // ui-components
+  ["ControlledTreeProps.treeEvents", "ControlledTreeProps.eventsHandler"],
+
 ]);
 
 
@@ -116,48 +134,44 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   
   // Transform imports
   const changedClasses = new Map<string, string>();
-  const newImports = new Map<string, ImportSpecifier[]>();
+  const newImports = new Map<string, ImportSet>();
 
   // TODO: Ensure no duplicate imports
   // Update import renames within same package, build list of class renames, and imports to update
   ast.find(j.ImportDeclaration)
     .replaceWith((path: ASTPath<ImportDeclaration>) => {
       const packageName = (path.value.source as StringLiteral).value;
-      const newSpecifiers: ImportSpecifierKind[] = [];
+      const newSpecifiers = new ImportSet();
       for (const specifier of path.value.specifiers) {
         if (specifier.type === "ImportSpecifier") {
           const key = `${packageName}.${specifier.imported.name}`;
           if (!changedImports.has(key)) {
-            newSpecifiers.push(specifier);
+            newSpecifiers.add(specifier);
           } else {
             const [newPackageName, newImport] = changedImports.get(key).split('.');
             if (newPackageName) {
-              if (newImport !== specifier.imported.name) {
-                // Class was renamed, add it to changedClasses
+              // If class was renamed, add it to changedClasses
+              if (newImport !== specifier.imported.name)
                 changedClasses.set(specifier.imported.name, newImport)
-              }
 
               const newSpecifier = j.importSpecifier(j.identifier(newImport));
               if (newPackageName === packageName) {
-                // Import renamed within same package
-                if (!newSpecifiers.some(spec => { return spec.name === newSpecifier.name; })) {
-                  newSpecifiers.push(newSpecifier);
-                }
+                newSpecifiers.add(newSpecifier);
               } else {
                 if (newImports.has(newPackageName))
-                  newImports.get(newPackageName).push(newSpecifier);
+                  newImports.get(newPackageName).add(newSpecifier);
                 else
-                  newImports.set(newPackageName, [newSpecifier]);
+                  newImports.set(newPackageName, new ImportSet([newSpecifier]));
               }
             }
           }
         } else {
           // Import is either default or namespace import
-          newSpecifiers.push(specifier);
+          newSpecifiers.add(specifier);
         }
       }
 
-      return j.importDeclaration(sortImports(newSpecifiers), j.stringLiteral(packageName));
+      return j.importDeclaration(sortImports(Array.from(newSpecifiers)), j.stringLiteral(packageName));
     });
 
   // Update existing imports with classes moved between packages
@@ -167,23 +181,20 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
     })
     .replaceWith((path: ASTPath<ImportDeclaration>) => {
       const packageName = (path.value.source as StringLiteral).value;
-      const newSpecifiers = path.value.specifiers;
-      for (const newImport of newImports.get(packageName)) {
-        if (!newSpecifiers.some(spec => { return spec.name === newImport.name; }))
-          newSpecifiers.push(newImport);
-      }
-      newImports.delete(packageName);
+      const newSpecifiers = newImports.get(packageName);
+      for (const specifier of path.value.specifiers)
+        newSpecifiers.add(specifier);
 
-      return j.importDeclaration(sortImports(newSpecifiers), j.stringLiteral(packageName));
+      newImports.delete(packageName);
+      return j.importDeclaration(sortImports(Array.from(newSpecifiers)), j.stringLiteral(packageName));
     })
 
   // Add new imports for classes moved between packages
   for (const packageName of newImports.keys()) {
-    const specifiers = newImports.get(packageName);
-    const newImport = j.importDeclaration(sortImports(specifiers), j.stringLiteral(packageName));
+    const newImportDeclaration = j.importDeclaration(sortImports(Array.from(newImports.get(packageName))), j.stringLiteral(packageName));
     const importDeclarations = ast.find(j.ImportDeclaration);
     // Insert after last import
-    j(importDeclarations.at(importDeclarations.length - 1).get()).insertAfter(newImport);
+    j(importDeclarations.at(importDeclarations.length - 1).get()).insertAfter(newImportDeclaration);
   }
 
   // Delete empty imports
