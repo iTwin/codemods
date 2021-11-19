@@ -12,7 +12,7 @@ describe("core-backend transforms", () => {
   defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/backend');
 });
 
-describe.only("core-frontend transforms", () => {
+describe("core-frontend transforms", () => {
   defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/frontend');
 });
 
@@ -23,4 +23,5 @@ describe("core-geometry transforms", () => {
 describe("ui transforms", () => {
   defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/ui-core');
   defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/components-react');
+  defineTest(__dirname, './typed-transforms', { tsConfigPath: './transforms/__testfixtures__/typed-transforms/tsconfig.json' }, 'typed-transforms/appui-react');
 });
