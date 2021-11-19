@@ -46,6 +46,27 @@ const changedImports = new Map<string, string>([
   ["@bentley/ui-components.SignIn", ""],
   ["@bentley/ui-components.DEPRECATED_Tree", "@bentley/ui-components.ControlledTree"],
   ["@bentley/ui-components.BeInspireTree", "@bentley/ui-components.ControlledTree"],
+
+  // ui-framework
+  ["@bentley/ui-framework.COLOR_THEME_DEFAULT", "@bentley/ui-framework.SYSTEM_PREFERRED_COLOR_THEME"],
+  ["@bentley/ui-framework.FunctionKey", "@bentley/ui-abstract.FunctionKey"],
+  ["@bentley/ui-framework.IModelAppUiSettings", "@bentley/ui-framework.UserSettingsStorage"],
+  ["@bentley/ui-framework.ContentGroupManager", ""],
+  ["@bentley/ui-framework.ReactMessage", "@bentley/ui-core.ReactMessage"],
+  ["@bentley/ui-framework.SavedView", "@bentley/ui-framework.ViewStateHelper"],
+  ["@bentley/ui-framework.SavedViewProps", "@bentley/ui-framework.ViewStateHelperProps"],
+  ["@bentley/ui-framework.SavedViewLayout", "@bentley/ui-framework.StageContentLayout"],
+  ["@bentley/ui-framework.SavedViewLayoutProps", "@bentley/ui-framework.StageContentLayoutProps"],
+  ["@bentley/ui-framework.SpecialKey", "@bentley/ui-abstract.SpecialKey"],
+  ["@bentley/ui-framework.WidgetState", "@bentley/ui-abstract.WidgetState"],
+  ["@bentley/ui-framework.UserProfileBackstageItem", ""],
+  ["@bentley/ui-framework.SignIn", ""],
+  ["@bentley/ui-framework.SignOutModalFrontstage", ""],
+  ["@bentley/ui-framework.IModelConnectedCategoryTree", ""],
+  ["@bentley/ui-framework.IModelConnectedModelsTree", ""],
+  ["@bentley/ui-framework.IModelConnectedSpatialContainmentTree", ""],
+  ["@bentley/ui-framework.CategoryTreeWithSearchBox", ""],
+  ["@bentley/ui-framework.ContentLayoutProps", "@bentley/ui-abstract.ContentLayoutProps"]
 ]);
 
 // If member ends in () it is a function
@@ -94,6 +115,8 @@ const changedMembers = new Map<string, string>([
 
   // ui-components
   ["ControlledTreeProps.treeEvents", "ControlledTreeProps.eventsHandler"],
+
+  // appui-react
 
 ]);
 
