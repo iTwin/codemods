@@ -22,6 +22,8 @@
   },
   "devDependencies": {
     "@bentley/bentleyjs-core": "2.19.22",
+    "@bentley/ecschema-editing": "2.19.22",
+    "@bentley/ecschema-metadata": "2.19.22",
     "@bentley/geometry-core": "2.19.22",
     "@bentley/imodeljs-backend": "2.19.22",
     "@bentley/imodeljs-common": "2.19.22",
