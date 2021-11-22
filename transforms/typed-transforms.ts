@@ -66,7 +66,30 @@ const changedImports = new Map<string, string>([
   ["@bentley/ui-framework.IModelConnectedModelsTree", ""],
   ["@bentley/ui-framework.IModelConnectedSpatialContainmentTree", ""],
   ["@bentley/ui-framework.CategoryTreeWithSearchBox", ""],
-  ["@bentley/ui-framework.ContentLayoutProps", "@bentley/ui-abstract.ContentLayoutProps"]
+  ["@bentley/ui-framework.ContentLayoutProps", "@bentley/ui-abstract.ContentLayoutProps"],
+
+  // ecschema-metadata
+  ["@bentley/ecschema-metadata.IDiagnostic", "@bentley/ecschema-editing.IDiagnostic"],
+  ["@bentley/ecschema-metadata.BaseDiagnostic", "@bentley/ecschema-editing.BaseDiagnostic"],
+  ["@bentley/ecschema-metadata.DiagnosticType", "@bentley/ecschema-editing.DiagnosticType"],
+  ["@bentley/ecschema-metadata.DiagnosticCategory", "@bentley/ecschema-editing.DiagnosticCategory"],
+  ["@bentley/ecschema-metadata.DiagnosticCodes", "@bentley/ecschema-editing.DiagnosticCodes"],
+  ["@bentley/ecschema-metadata.Diagnostics", "@bentley/ecschema-editing.Diagnostics"],
+  ["@bentley/ecschema-metadata.IDiagnosticReporter", "@bentley/ecschema-editing.IDiagnosticReporter"],
+  ["@bentley/ecschema-metadata.SuppressionDiagnosticReporter", "@bentley/ecschema-editing.SuppressionDiagnosticReporter"],
+  ["@bentley/ecschema-metadata.FormatDiagnosticReporter", "@bentley/ecschema-editing.FormatDiagnosticReporter"],
+  ["@bentley/ecschema-metadata.LoggingDiagnosticReporter", "@bentley/ecschema-editing.LoggingDiagnosticReporter"],
+  ["@bentley/ecschema-metadata.IRuleSet", "@bentley/ecschema-editing.IRuleSet"],
+  ["@bentley/ecschema-metadata.ECRuleSet", "@bentley/ecschema-editing.ECRuleSet"],
+  ["@bentley/ecschema-metadata.ISuppressionRule", "@bentley/ecschema-editing.ISuppressionRule"],
+  ["@bentley/ecschema-metadata.BaseSuppressionRule", "@bentley/ecschema-editing.BaseSuppressionRule"],
+  ["@bentley/ecschema-metadata.IRuleSuppressionMap", "@bentley/ecschema-editing.IRuleSuppressionMap"],
+  ["@bentley/ecschema-metadata.BaseRuleSuppressionMap", "@bentley/ecschema-editing.BaseRuleSuppressionMap"],
+  ["@bentley/ecschema-metadata.IRuleSuppressionSet", "@bentley/ecschema-editing.IRuleSuppressionSet"],
+  ["@bentley/ecschema-metadata.SchemaCompareCodes", "@bentley/ecschema-editing.SchemaCompareCodes"],
+  ["@bentley/ecschema-metadata.SchemaCompareDiagnostics", "@bentley/ecschema-editing.SchemaCompareDiagnostics"],
+  ["@bentley/ecschema-metadata.SchemaValidater", "@bentley/ecschema-editing.SchemaValidater"],
+  ["@bentley/ecschema-metadata.SchemaValidationVisitor", "@bentley/ecschema-editing.SchemaValidationVisitor"],
 ]);
 
 // If member ends in () it is a function
@@ -116,8 +139,10 @@ const changedMembers = new Map<string, string>([
   // ui-components
   ["ControlledTreeProps.treeEvents", "ControlledTreeProps.eventsHandler"],
 
-  // appui-react
-
+  // ecschema-metadata
+  ["RelationshipConstraint.deserialize()", "RelationshipConstraint.fromJSON()"],
+  ["RelationshipConstraint.deserializeSync()", "RelationshipConstraint.fromJSONSync()"],
+  ["RelationshipConstraint.toJson()", "RelationshipConstraint.toJSON()"]
 ]);
 
 
