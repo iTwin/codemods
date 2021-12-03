@@ -68,6 +68,28 @@ const changedImports = new Map<string, string>([
   ["@bentley/ui-framework.CategoryTreeWithSearchBox", ""],
   ["@bentley/ui-framework.ContentLayoutProps", "@bentley/ui-abstract.ContentLayoutProps"],
 
+  // presentation common
+  ["@bentley/presentation-common.CompressedDescriptorJSON", "@bentley/presentation-common.DescriptorJSON"],
+  ["@bentley/presentation-common.ExtendedContentRequestOptions", "@bentley/presentation-common.ContentRequestOptions"],
+  ["@bentley/presentation-common.ExtendedContentRpcRequestOptions", "@bentley/presentation-common.ContentRpcRequestOptions"],
+  ["@bentley/presentation-common.ExtendedHierarchyRequestOptions", "@bentley/presentation-common.HierarchyRequestOptions"],
+  ["@bentley/presentation-common.ExtendedHierarchyRpcRequestOptions", "@bentley/presentation-common.HierarchyRpcRequestOptions"],
+  ["@bentley/presentation-common.HierarchyCompareRpcOptions", ""],
+  ["@bentley/presentation-common.LabelRequestOptions", "@bentley/presentation-common.DisplayLabelRequestOptions"],
+  ["@bentley/presentation-common.LabelRpcRequestOptions", "@bentley/presentation-common.DisplayLabelRpcRequestOptions"],
+  ["@bentley/presentation-common.PresentationDataCompareOptions", ""],
+  ["@bentley/presentation-common.RequestPriority", ""],
+
+  // presentation backend
+  ["@bentley/presentation-backend.DuplicateRulesetHandlingStrategy", "@bentley/presentation-backend.RulesetInsertOptions"],
+
+  // presentation components
+  ["@bentley/presentation-components.ControlledTreeFilteringProps", "@bentley/presentation-components.ControlledPresentationTreeFilteringProps"],
+  ["@bentley/presentation-components.PropertyGridWithUnifiedSelectionProps", "@bentley/presentation-components.PropertyDataProviderWithUnifiedSelectionProps"],
+  ["@bentley/presentation-components.TreeWithFilteringSupportProps", "@bentley/presentation-components.ControlledPresentationTreeFilteringProps"],
+  ["@bentley/presentation-components.TreeWithUnifiedSelectionProps", "@bentley/presentation-components.UnifiedSelectionTreeEventHandlerParams"],
+
+
   // ecschema-metadata
   ["@bentley/ecschema-metadata.IDiagnostic", "@bentley/ecschema-editing.IDiagnostic"],
   ["@bentley/ecschema-metadata.BaseDiagnostic", "@bentley/ecschema-editing.BaseDiagnostic"],
@@ -138,6 +160,37 @@ const changedMembers = new Map<string, string>([
 
   // ui-components
   ["ControlledTreeProps.treeEvents", "ControlledTreeProps.eventsHandler"],
+
+  // presentation common
+  ["ContentInstancesOfSpecificClassesSpecification.arePolymorphic", "ContentInstancesOfSpecificClassesSpecification.handleInstancesPolymorphically"],
+  ["Descriptor.toCompressedJSON()", "Descriptor.toJSON()"],
+  ["DescriptorOverrides.hiddenFieldNames", "DescriptorOverrides.fieldsSelector"],
+  ["DescriptorOverrides.sortDirection", "DescriptorOverrides.sorting.direction"],
+  ["DescriptorOverrides.sortingFieldName", "DescriptorOverrides.sorting.field"],
+  ["ECPropertyGroupingNodeKey.groupingValue", "ECPropertyGroupingNodeKey.groupingValues"],
+  ["[Field].fromJSON()", "[Field].fromCompressedJSON()"],
+  ["PresentationRpcInterface.getDisplayLabelDefinitions()", "PresentationRpcInterface.getPagedDisplayLabelDefinitions()"],
+  ["PresentationRpcInterface.getDistinctValues()", "PresentationRpcInterface.getPagedDistinctValues()"],
+  ["PresentationRpcInterface.getNodes()", "PresentationRpcInterface.getPagedNodes()"],
+  ["PresentationRpcInterface.getNodesAndCount()", "PresentationRpcInterface.getPagedNodes()"],
+  ["PropertiesFieldDescriptor.propertyClass", "PropertiesFieldDescriptor.properties.class"],
+  ["PropertiesFieldDescriptor.propertyName", "PropertiesFieldDescriptor.properties.name"],
+  ["Ruleset.supportedSchemas", "Ruleset.requiredSchemas"],
+  ["SelectClassInfo.pathToPrimaryClass", "SelectClassInfo.pathFromInputToSelectClass"],
+  ["SelectClassInfo.relatedInstanceClasses", "SelectClassInfo.relatedInstancePaths"],
+  ["SelectClassInfoJSON.pathToPrimaryClass", "SelectClassInfoJSON.pathFromInputToSelectClass"],
+  ["SelectClassInfoJSON.relatedInstanceClasses", "SelectClassInfoJSON.relatedInstancePaths"],
+
+  // presentation backend
+  ["PresentationManager.getDistinctValues()", "PresentationManager.getPagedDistinctValues()"],
+  ["PresentationManagerProps.activeLocale", "PresentationManagerProps.defaultLocale"],
+  ["PresentationManagerProps.activeUnitSystem", "PresentationManagerProps.defaultUnitSystem"],
+  ["PresentationManagerProps.cacheConfig", "PresentationManagerProps.caching.hierarchies"],
+  ["PresentationManagerProps.contentCacheSize", "PresentationManagerProps.caching.content.size"],
+  ["PresentationManagerProps.taskAllocationsMap", "PresentationManagerProps.workerThreadsCount"],
+
+  // presentation frontend
+  ["[FavoritePropertiesScope].Project", "[FavoritePropertiesScope].ITwin"],
 
   // ecschema-metadata
   ["RelationshipConstraint.deserialize()", "RelationshipConstraint.fromJSON()"],
