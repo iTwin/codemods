@@ -12,10 +12,16 @@ The full list of completed and planned codemods can be found in [transforms.md](
 
 3. In the root of your project's repo, run codemods with:
 
-```none
-../codemods/run-codemods.bat PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
+    ```none
+    ../codemods/run-codemods.bat PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
 
-PACKAGE.JSON_PATH is the path to your project's package.json
-TSCONFIG_PATH is the path to your project's tsconfig.json file
-SRC_PATH is the path to your src directory
-```
+    PACKAGE.JSON_PATH is the path to your project's package.json
+    TSCONFIG_PATH is the path to your project's tsconfig.json file
+    SRC_PATH is the path to your src directory
+    ```
+
+      If you are on a Mac, replace the bat command line with the following one:
+
+    ```none
+    ../codemods/run-codemods.sh PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
+    ```
