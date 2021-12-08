@@ -9,11 +9,14 @@ on:
 
 jobs:
   ci-build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2
-
+        
       - name: Setup node
         uses: actions/setup-node@v2
         with:
