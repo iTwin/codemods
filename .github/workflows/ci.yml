@@ -8,8 +8,8 @@ on:
       - main
 
 jobs:
-  extract-api:
-    runs-on: ubuntu-latest
+  ci-build:
+    runs-on: windows-latest
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2
