@@ -8,20 +8,22 @@ The full list of completed and planned codemods can be found in [transforms.md](
 
 1. Clone this repo into the same parent directory as the repo you wish to transform
 
-2. npm install --production
+2. `npm install --production`
 
 3. In the root of your project's repo, run codemods with:
 
-    ```none
-    ../codemods/run-codemods.bat PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
+    - Windows
+        ```bat
+        ../codemods/run-codemods.bat PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
+        ```
 
-    PACKAGE.JSON_PATH is the path to your project's package.json
-    TSCONFIG_PATH is the path to your project's tsconfig.json file
-    SRC_PATH is the path to your src directory
-    ```
+    - MacOs
+        ```sh
+        ../codemods/run-codemods.sh PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
+        ```
 
-      If you are on a Mac, replace the bat command line with the following one:
+    > PACKAGE.JSON_PATH is the path to your project's package.json
 
-    ```none
-    ../codemods/run-codemods.sh PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
-    ```
+    > TSCONFIG_PATH is the path to your project's tsconfig.json file
+
+    > SRC_PATH is the path to your src directory
