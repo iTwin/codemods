@@ -1,7 +1,9 @@
 "use strict";
 
-const packageVersion = "3.0.0";
-const changedPackages = {
+const RC = "rc";
+const LATEST = "latest";
+
+const corePackages = {
   "@bentley/imodeljs-backend": "@itwin/core-backend",
   "@bentley/imodeljs-common": "@itwin/core-common",
   "@bentley/imodeljs-frontend": "@itwin/core-frontend",
@@ -54,10 +56,12 @@ const changedPackages = {
   "@bentley/map-layers": "@itwin/map-layers",
   "@bentley/rpcinterface-full-stack-tests": "@itwin/rpcinterface-full-stack-tests",
   "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests",
-
-  // Packages outside itwinjs-core
-  "@bentley/frontend-authorization-client": "@itwin/browser-authorization"
 }
+
+// Packages outside itwinjs-core, versioned separetely
+const externalPackages = {
+  "@bentley/frontend-authorization-client": "@itwin/browser-authorization",
+};
 
 if (process.argv.length !== 3) {
   console.log("Bad arguments provided, exiting...");
@@ -80,8 +84,10 @@ for (const section in packageData) {
   const newPackages = { };
   if (section.toLowerCase().includes("dependencies")) {
     for (const pkg in packageData[section])
-      if (changedPackages[pkg])
-        newPackages[changedPackages[pkg]] = packageVersion;
+      if (corePackages[pkg])
+        newPackages[corePackages[pkg]] = RC;
+      else if (externalPackages[pkg])
+        newPackages[externalPackages[pkg]] = LATEST;
       else
         newPackages[pkg] = packageData[section][pkg];
     packageData[section] = newPackages;
