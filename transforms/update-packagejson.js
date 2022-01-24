@@ -1,6 +1,6 @@
 "use strict";
 
-const RC = "rc";
+const OFFICIAL_RELEASE_3 = "^3.0.0";
 const LATEST = "latest";
 
 const corePackages = {
@@ -86,7 +86,7 @@ for (const section in packageData) {
   if (section.toLowerCase().includes("dependencies")) {
     for (const pkg in packageData[section])
       if (corePackages[pkg])
-        newPackages[corePackages[pkg]] = RC;
+        newPackages[corePackages[pkg]] = OFFICIAL_RELEASE_3;
       else if (externalPackages[pkg])
         newPackages[externalPackages[pkg]] = LATEST;
       else
