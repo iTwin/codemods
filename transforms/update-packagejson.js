@@ -56,11 +56,12 @@ const corePackages = {
   "@bentley/map-layers": "@itwin/map-layers",
   "@bentley/rpcinterface-full-stack-tests": "@itwin/rpcinterface-full-stack-tests",
   "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests",
-}
+};
 
 // Packages outside itwinjs-core, versioned separetely
 const externalPackages = {
   "@bentley/frontend-authorization-client": "@itwin/browser-authorization",
+  "@bentley/reality-data-client": "@itwin/reality-data-client",
 };
 
 if (process.argv.length !== 3) {

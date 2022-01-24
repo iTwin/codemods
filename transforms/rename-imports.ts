@@ -57,7 +57,8 @@ const changedPackages = {
   "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests",
 
   // Packages outside itwinjs-core
-  "@bentley/frontend-authorization-client": "@itwin/browser-authorization"
+  "@bentley/frontend-authorization-client": "@itwin/browser-authorization",
+  "@bentley/reality-data-client": "@itwin/reality-data-client"
 }
 
 export default function transformer(file: FileInfo, api: API) {

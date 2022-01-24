@@ -51,5 +51,6 @@ import { mapLayersModule } from "@itwin/map-layers";
 import { rpcFullStackTestModule } from "@itwin/rpcinterface-full-stack-tests";
 import { imodelhubClientTestModule } from "@itwin/imodelhub-client-tests";
 import { authModule } from "@itwin/browser-authorization";
+import { realityDataModule } from "@itwin/reality-data-client";
 
 const notAnImport = "@bentley/imodeljs-backend";
