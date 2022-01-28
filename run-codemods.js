@@ -4,7 +4,6 @@ const usage = `Usage:
     [node] ./run-codemods.js PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH"
 `;
 
-
 async function main() {
   const wasScriptRanByNodeExe = /node$/.test(process.argv[0]);
   // trim the optional node exe path and this script's path from the command line to get the positional arguments
@@ -20,12 +19,15 @@ async function main() {
   const path = require("path");
 
   const [packageJsonPath, tsConfigPath, srcPath] = args;
-  if (!fs.existsSync(packageJsonPath)) throw Error("the specified package.json could not be found");
-  if (!fs.existsSync(tsConfigPath)) throw Error("the specified typescript config could not be found");
-  if (!fs.existsSync(srcPath)) throw Error("the specified source directory could not be found");
+  if (!fs.existsSync(packageJsonPath))
+    throw Error("the specified package.json could not be found");
+  if (!fs.existsSync(tsConfigPath))
+    throw Error("the specified typescript config could not be found");
+  if (!fs.existsSync(srcPath))
+    throw Error("the specified source directory could not be found");
 
   const root = __dirname;
-  const jsCodeShiftPath = path.join(root, 'node_modules/.bin/jscodeshift');
+  const jsCodeShiftPath = path.join(root, "node_modules/.bin/jscodeshift");
 
   /**
    * spawn a process from the executable at `execPath` with the arguments `args`
@@ -37,8 +39,12 @@ async function main() {
   async function spawnPromise(execPath, args) {
     return new Promise((resolve, reject) => {
       const spawned = child_process.spawn(execPath, args);
-      spawned.on('exit', (code) => (code === 0 ? resolve() : reject(Error(`codemod exited with non-zero return code of ${code}`))));
-      spawned.on('error', reject);
+      spawned.on("exit", (code) =>
+        code === 0
+          ? resolve()
+          : reject(Error(`codemod exited with non-zero return code of ${code}`))
+      );
+      spawned.on("error", reject);
     });
   }
 
@@ -52,24 +58,33 @@ async function main() {
    * }} options
    * @returns {Promise<void>}
    */
-  async function spawnCodemod(codemodScriptPath, { extensions = ['js', 'ts'], parser, tsConfigPath }) {
-    return spawnPromise(
-      jsCodeShiftPath,
-      [
-        "-t",
-        codemodScriptPath,
-        ...extensions ? [`--extensions=${extensions.join(',')}`] : [],
-        ...parser ? [`--parser=${parser}`] : [],
-        ...tsConfigPath ? [`--tsConfigPath=${tsConfigPath}`] : [],
-        srcPath
-      ]
-    );
+  async function spawnCodemod(
+    codemodScriptPath,
+    { extensions = ["js", "ts"], parser, tsConfigPath }
+  ) {
+    return spawnPromise(jsCodeShiftPath, [
+      "-t",
+      codemodScriptPath,
+      ...(extensions ? [`--extensions=${extensions.join(",")}`] : []),
+      ...(parser ? [`--parser=${parser}`] : []),
+      ...(tsConfigPath ? [`--tsConfigPath=${tsConfigPath}`] : []),
+      srcPath,
+    ]);
   }
 
   try {
-    await spawnCodemod(path.join(root, "transforms/typed-transforms.ts"), { extensions:['ts', 'tsx'], tsConfigPath});
-    await spawnCodemod(path.join(root, "transforms/itwin-codemods.ts"), { extensions:['js', 'ts'], parser: 'ts'});
-    await spawnCodemod(path.join(root, "transforms/itwin-codemods.ts"), { extensions:['jsx', 'tsx'], parser: 'tsx'});
+    await spawnCodemod(path.join(root, "transforms/typed-transforms.ts"), {
+      extensions: ["ts", "tsx"],
+      tsConfigPath,
+    });
+    await spawnCodemod(path.join(root, "transforms/itwin-codemods.ts"), {
+      extensions: ["js", "ts"],
+      parser: "ts",
+    });
+    await spawnCodemod(path.join(root, "transforms/itwin-codemods.ts"), {
+      extensions: ["jsx", "tsx"],
+      parser: "tsx",
+    });
     require("./transforms/update-packagejson").run(srcPath);
   } catch (err) {
     console.log(err.message);
@@ -78,5 +93,8 @@ async function main() {
 }
 
 if (module === require.main) {
-  main().catch((err) => {console.error(err); process.exit(1);})
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }
