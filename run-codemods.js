@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 
 const usage = `Usage:
     [node] ./run-codemods.js PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
