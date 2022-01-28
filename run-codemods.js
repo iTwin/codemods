@@ -1,7 +1,7 @@
 #!/bin/env node
 
 const usage = `Usage:
-    [node] ./run-codemods.js PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH"
+    [node] ./run-codemods.js PACKAGE.JSON_PATH TSCONFIG_PATH SRC_PATH
 `;
 
 async function main() {
@@ -31,18 +31,19 @@ async function main() {
 
   /**
    * spawn a process from the executable at `execPath` with the arguments `args`
-   * return a promise for when it finishes, ignoring any output but rejecting on non-zero exit
+   * return a promise for when it finishes, inheriting stdin/out/err from the parent
+   * rejects on non-zero exit
    * @param {string} execPath
    * @param {string[]} args
    * @returns {Promise<void>}
    */
   async function spawnPromise(execPath, args) {
     return new Promise((resolve, reject) => {
-      const spawned = child_process.spawn(execPath, args);
+      const spawned = child_process.spawn(execPath, args, { stdio: "inherit" });
       spawned.on("exit", (code) =>
         code === 0
           ? resolve()
-          : reject(Error(`codemod exited with non-zero return code of ${code}`))
+          : reject(Error(`process exited with non-zero return code of ${code}`))
       );
       spawned.on("error", reject);
     });
@@ -73,6 +74,7 @@ async function main() {
   }
 
   try {
+    // jscodeshift probably has a programmatic API that should be used instead
     await spawnCodemod(path.join(root, "transforms/typed-transforms.ts"), {
       extensions: ["ts", "tsx"],
       tsConfigPath,
