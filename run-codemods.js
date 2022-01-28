@@ -87,7 +87,7 @@ async function main() {
       extensions: ["jsx", "tsx"],
       parser: "tsx",
     });
-    require("./transforms/update-packagejson").run(srcPath);
+    require("./transforms/update-packagejson").run(packageJsonPath);
   } catch (err) {
     console.log(err.message);
     process.exit(1);
