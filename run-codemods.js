@@ -5,7 +5,7 @@ const usage = `Usage:
 `;
 
 async function main() {
-  const wasScriptRanByNodeExe = /node(\.exe)?$/.test(process.argv[0]);
+  const wasScriptRanByNodeExe = /node(\.exe)?$/i.test(process.argv[0]);
   // trim the optional node exe path and this script's path from the command line to get the positional arguments
   const args = process.argv.slice(wasScriptRanByNodeExe ? 2 : 1);
 
