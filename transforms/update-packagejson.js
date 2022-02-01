@@ -58,42 +58,55 @@ const corePackages = {
   "@bentley/imodelhub-client-tests": "@itwin/imodelhub-client-tests",
 };
 
-// Packages outside itwinjs-core, versioned separetely
-const externalPackages = {
-  "@bentley/frontend-authorization-client": "@itwin/browser-authorization",
-  "@bentley/reality-data-client": "@itwin/reality-data-client",
-};
+/**
+ * @param {string} packageFile path to the package.json file
+ */
+exports.run = function(packageFile) {
+  // Packages outside itwinjs-core, versioned separetely
+  const externalPackages = {
+    "@bentley/frontend-authorization-client": "@itwin/browser-authorization",
+    "@bentley/reality-data-client": "@itwin/reality-data-client",
+  };
 
-if (process.argv.length !== 3) {
-  console.log("Bad arguments provided, exiting...");
-  process.exdit(1);
+  console.log("Updating " + packageFile);
+
+  const fs = require("fs");
+  if (!fs.existsSync(packageFile)) {
+    throw Error(`No file found at path '${packageFile}'`);
+  }
+
+  const rawData = fs.readFileSync(packageFile, { encoding: 'utf8' });
+  const packageData = JSON.parse(rawData);
+
+  for (const section in packageData) {
+    const newPackages = { };
+    if (section.toLowerCase().includes("dependencies")) {
+      for (const pkg in packageData[section])
+        if (corePackages[pkg])
+          newPackages[corePackages[pkg]] = OFFICIAL_RELEASE_3;
+        else if (externalPackages[pkg])
+          newPackages[externalPackages[pkg]] = LATEST;
+        else
+          newPackages[pkg] = packageData[section][pkg];
+      packageData[section] = newPackages;
+    }
+  }
+
+  fs.writeFileSync(packageFile, JSON.stringify(packageData, null, 2) + "\n");
 }
 
-const packageFile = process.argv[2];
-console.log("Updating " + packageFile);
+if (module === require.main) {
+  if (process.argv.length !== 3) {
+    console.log("Bad arguments provided, exiting...");
+    process.exit(1);
+  }
 
-const fs = require("fs");
-if (!fs.existsSync(packageFile)) {
-  console.log(`No file found at path '${packageFile}'`);
-  process.exit(1);
-}
-
-const rawData = fs.readFileSync(packageFile);
-const packageData = JSON.parse(rawData);
-
-for (const section in packageData) {
-  const newPackages = { };
-  if (section.toLowerCase().includes("dependencies")) {
-    for (const pkg in packageData[section])
-      if (corePackages[pkg])
-        newPackages[corePackages[pkg]] = OFFICIAL_RELEASE_3;
-      else if (externalPackages[pkg])
-        newPackages[externalPackages[pkg]] = LATEST;
-      else
-        newPackages[pkg] = packageData[section][pkg];
-    packageData[section] = newPackages;
+  try {
+    const packageFile = process.argv[2]
+    exports.run(packageFile);
+    console.log(`'${packageFile} updated successfully.`);
+  } catch (err) {
+    console.log(err.message);
+    process.exit(1);
   }
 }
-
-fs.writeFileSync(packageFile, JSON.stringify(packageData, null, 2) + "\n");
-console.log(`'${packageFile} updated successfully.`);
