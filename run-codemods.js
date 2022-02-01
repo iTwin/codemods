@@ -27,7 +27,7 @@ async function main() {
     throw Error("the specified source directory could not be found");
 
   const root = __dirname;
-  const jsCodeShiftPath = path.join(root, "node_modules/.bin/jscodeshift");
+  const jsCodeShiftPath = path.join(root, "node_modules/jscodeshift/bin/jscodeshift.js");
 
   /**
    * spawn a process from the executable at `execPath` with the arguments `args`
@@ -63,9 +63,9 @@ async function main() {
     codemodScriptPath,
     { extensions = ["js", "ts"], parser, tsConfigPath }
   ) {
-    return spawnPromise(jsCodeShiftPath, [
-      "-t",
-      codemodScriptPath,
+    return spawnPromise(process.execPath, [
+      jsCodeShiftPath,
+      "-t", codemodScriptPath,
       ...(extensions ? [`--extensions=${extensions.join(",")}`] : []),
       ...(parser ? [`--parser=${parser}`] : []),
       ...(tsConfigPath ? [`--tsConfigPath=${tsConfigPath}`] : []),
