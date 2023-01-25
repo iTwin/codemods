@@ -1,14 +1,14 @@
-import { API, ASTPath, FileInfo, StringLiteral, ImportDeclaration, Options, Identifier, MemberExpression, CallExpression, ImportSpecifier } from "jscodeshift";
+import { API, ASTPath, FileInfo, StringLiteral, ImportDeclaration, Options, Identifier, MemberExpression, CallExpression } from "jscodeshift";
 import { AST, parse, parseAndGenerateServices, TSESTreeOptions } from "@typescript-eslint/typescript-estree";
 import { ParserServices } from "@typescript-eslint/typescript-estree";
-import { getDeclaredTypeName, ImportSet, ImportSpecifierKind, sortImports } from "./Utils";
+import { getDeclaredTypeName, ImportSet, parseDefinitions, sortImports } from "./Utils";
 import { Type, finalize } from "ast-types";
 
-const changedImports = new Map<string, string>([
+const defaultChangedImports = new Map<string, string>([
   // core-common
   ["@bentley/imodeljs-common.AnalysisStyleScalar", "@bentley/imodeljs-common.AnalysisStyleThematic"],
   ["@bentley/imodeljs-common.AnalysisStyleScalarProps", "@bentley/imodeljs-common.AnalysisStyleThematicProps"],
-  
+
   // core-backend
   ["@bentley/imodeljs-backend.AutoPush", ""],
   ["@bentley/imodeljs-backend.BriefcaseIdValue", "@bentley/imodeljs-common.BriefcaseIdValue"],
@@ -121,7 +121,7 @@ const changedMembers = new Map<string, string>([
   ["AnalysisStyle.scalar", "AnalysisStyle.thematic" ],
   ["[BriefcaseIdValue].Standalone", "[BriefcaseIdValue].Unassigned"],
   ["[BriefcaseIdValue].DeprecatedStandalone", "[BriefcaseIdValue].Unassigned"],
-  ["Code.getValue()", "Code.value"], 
+  ["Code.getValue()", "Code.value"],
   ["CodeSpec.specScopeType", "CodeSpec.scopeType" ],
   ["DisplayStyleSettings.excludedElements", "DisplayStyleSettings.excludedElementIds" ],
   ["DisplayStyleOverridesOptions.includeProjectSpecific", "DisplayStyleOverridesOptions.includeITwinSpecific" ],
@@ -141,7 +141,7 @@ const changedMembers = new Map<string, string>([
   ["StandaloneDb.filePath", "StandaloneDb.pathName" ],
   ["TxnChangedEntities.inserted", "TxnChangedEntities.inserts" ],
   ["TxnChangedEntities.deleted", "TxnChangedEntities.deletes" ],
-  ["TxnChangedEntities.updated", "TxnChangedEntities.updates" ],  
+  ["TxnChangedEntities.updated", "TxnChangedEntities.updates" ],
 
   // core-frontend
   ["CheckpointConnection.open()", "CheckpointConnection.openRemote()"],
@@ -198,7 +198,6 @@ const changedMembers = new Map<string, string>([
   ["RelationshipConstraint.toJson()", "RelationshipConstraint.toJSON()"]
 ]);
 
-
 interface ParserState {
   services?: ParserServices;
   options?: TSESTreeOptions;
@@ -212,12 +211,12 @@ function parseWithServices(j, file: FileInfo, projectPath) {
   def("TSInterfaceHeritage")
     .bases("Node");
   def("TSClassImplements")
-    .bases("Node"); 
+    .bases("Node");
   finalize();
 
-  parserState.options = { 
-    filePath: file.path, 
-    tsconfigRootDir: process.cwd(), 
+  parserState.options = {
+    filePath: file.path,
+    tsconfigRootDir: process.cwd(),
     project: projectPath
   };
   return {
@@ -232,7 +231,12 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
 
   const j = api.jscodeshift;
   const { ast, services } = parseWithServices(j, file, options?.tsConfigPath);
-  
+
+  let changedImports = defaultChangedImports;
+  if (options.definitions) {
+    ({ changedImports } = parseDefinitions(options.definitions));
+  }
+
   // Transform imports
   const changedClasses = new Map<string, string>();
   const newImports = new Map<string, ImportSet>();
@@ -319,7 +323,7 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
         return false;
       const object = expression.object as Identifier;
       const property = expression.property as Identifier;
-    
+
       const isStatic = object.name?.charAt(0) === object.name?.charAt(0).toUpperCase();
       const objectType = getDeclaredTypeName(object, services);
       const objectName = isStatic ? `[${objectType}]` : objectType;
@@ -349,7 +353,7 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
           j.memberExpression(
             j.identifier(newObjectName),
             j.identifier(newMemberName.slice(0, -2))
-          ), 
+          ),
           path.value.arguments
         );
       } else {
@@ -374,7 +378,7 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
       const isStatic = object.name.charAt(0) === object.name.charAt(0).toUpperCase();
       const objectType = getDeclaredTypeName(object, services);
       const objectName = isStatic ? `[${objectType}]` : objectType;
-  
+
       return changedMembers.has(`${objectName}.${property.name}`);
       })
     .replaceWith((path: ASTPath<MemberExpression>) => {
@@ -441,7 +445,7 @@ export default function transformer(file: FileInfo, api: API, options?: Options)
   return ast.toSource({ wrapColumn: 1024 });
 }
 
-export const parser = { 
+export const parser = {
   parse(source): AST<any> {
     if (parserState.options !== undefined) {
       const options = parserState.options;

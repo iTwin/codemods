@@ -1,6 +1,6 @@
+import { resolve } from "path";
 import { ParserServices } from "@typescript-eslint/typescript-estree";
-import { Identifier, Import, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, TSTypeAnnotation, TSTypeReference, VariableDeclarator } from "jscodeshift";
-import { isAssertionExpression } from "typescript";
+import { Identifier, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, TSTypeAnnotation, TSTypeReference } from "jscodeshift";
 
 export type ImportSpecifierKind = ImportDefaultSpecifier | ImportNamespaceSpecifier | ImportSpecifier;
 
@@ -14,7 +14,7 @@ export class ImportSet extends Set<ImportSpecifierKind> {
           return this;
       }
     }
-    
+
     super.add(other);
     return this;
   }
@@ -24,11 +24,11 @@ export function getTypeNameFromTypeAnnotation(typeAnnotation: TSTypeAnnotation):
   const typeRef = typeAnnotation?.typeAnnotation as TSTypeReference;
   if (!typeRef)
     return "";
-  
+
   const typeIdentifier = typeRef.typeName as Identifier;
   if (!typeIdentifier)
     return "";
-  
+
   return typeIdentifier.name;
 }
 
@@ -39,7 +39,7 @@ export function getDeclaredTypeName(node: Identifier, services: ParserServices):
   const { program, esTreeNodeToTSNodeMap } = services;
   const checker = program.getTypeChecker();
   const esTreeNodeToTSNode = (esNode) => esTreeNodeToTSNodeMap.get(esNode);
-  
+
   const tsNode = esTreeNodeToTSNode((node as any).original!);
   const type = checker.getTypeAtLocation(tsNode);
 
@@ -64,4 +64,15 @@ export function sortImports(imports: ImportSpecifierKind[]): ImportSpecifierKind
       return -1;
     return 0;
   });
+}
+
+export interface Definitions {
+  changedImports: Map<string, string>;
+}
+
+export function parseDefinitions(path: string): Definitions {
+  const definitionsJson = require(resolve(process.cwd(), path));
+  return {
+    changedImports: new Map(definitionsJson.changedImports),
+  };
 }
