@@ -1,6 +1,7 @@
 {
   "name": "@itwin/codemods",
   "version": "0.0.1",
+  "bin": "./bin/codemod.js",
   "description": "A collection of iTwin codemods",
   "license": "MIT",
   "repository": {
@@ -8,7 +9,8 @@
     "url": "https://github.com/iTwin/codemods"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc codemod.ts --outDir bin"
   },
   "keywords": [],
   "author": {
@@ -18,7 +20,8 @@
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^4.31.0",
     "jscodeshift": "^0.13.0",
-    "typescript": "~4.3.0"
+    "typescript": "^4.9.4",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
     "@bentley/bentleyjs-core": "2.19.25",

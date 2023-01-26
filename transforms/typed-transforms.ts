@@ -226,15 +226,12 @@ function parseWithServices(j, file: FileInfo, projectPath) {
 }
 
 export default function transformer(file: FileInfo, api: API, options?: Options) {
-  if (!options?.tsConfigPath)
-    throw new Error("Please specify path to tsconfig.json with --tsConfigPath=\'tsconfig.json\'");
-
   const j = api.jscodeshift;
   const { ast, services } = parseWithServices(j, file, options?.tsConfigPath);
 
   let changedImports = defaultChangedImports;
-  if (options.definitions) {
-    ({ changedImports } = parseDefinitions(options.definitions));
+  if (options?.definition) {
+    ({ changedImports } = parseDefinitions(options.definition));
   }
 
   // Transform imports

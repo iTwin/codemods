@@ -71,7 +71,8 @@ export interface Definitions {
 }
 
 export function parseDefinitions(path: string): Definitions {
-  const definitionsJson = require(resolve(process.cwd(), path));
+  const resolvedPath = resolve(process.cwd(), path);
+  const definitionsJson = require(resolvedPath);
   return {
     changedImports: new Map(definitionsJson.changedImports),
   };
