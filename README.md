@@ -21,3 +21,15 @@ The full list of completed and planned codemods can be found in [transforms.md](
     > TSCONFIG_PATH is the path to your project's tsconfig.json file
 
     > SRC_PATH is the path to your src directory
+
+## Alternative usage
+
+`npx @itwin/codemods`
+
+These are temporary steps needed before the package is published to the registry:
+
+1. Clone the repository
+2. `npm run build`
+3. `npm pack`
+4. *(Optional)* `npm uninstall @itwin/codemods -g`
+5. `npm install itwin-codemods-${packageVersion}.tgz -g`
